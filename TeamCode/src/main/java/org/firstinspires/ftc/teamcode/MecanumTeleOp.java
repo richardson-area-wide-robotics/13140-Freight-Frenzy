@@ -73,12 +73,19 @@ public class MecanumTeleOp extends LinearOpMode {
             double frontRightPower = (y - x - rx) / denominator;
             double backRightPower = (y + x - rx) / denominator;
 
-            if(carouselcounter){
-                carouselDrive.setPower(-1);
+            if(carouselclock) {
+                carouselDrive.setPower(1);
+
             }else {
 
-                if (carouselclock) {
-                    carouselDrive.setPower(1);
+                if (carouselcounter) {
+                    carouselDrive.setPower(-1);
+
+                }else {
+
+                    carouselDrive.setPower(0);
+                }
+            }
 
 
                 } else {
