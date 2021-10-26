@@ -87,16 +87,6 @@ public class MecanumTeleOp extends LinearOpMode {
                 }
             }
 
-
-                } else {
-
-                    carouselDrive.setPower(0);
-                }
-            }
-
-
-
-
             frontleftDrive.setPower(frontLeftPower);
             backleftDrive.setPower(backLeftPower);
             frontrightDrive.setPower(frontRightPower);
