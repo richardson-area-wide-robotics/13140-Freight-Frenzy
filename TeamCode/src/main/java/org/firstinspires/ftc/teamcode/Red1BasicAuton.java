@@ -155,10 +155,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
         private void servoDrop (int howMuch, double speed) throws InterruptedException {
             
-            servoDrop.setPosition(-1);
             servoDrop.setPosition(1);
-            wait(2);
             servoDrop.setPosition(-1);
+            wait(2);
+            servoDrop.setPosition(1);
 
 
             // Stop all motion;

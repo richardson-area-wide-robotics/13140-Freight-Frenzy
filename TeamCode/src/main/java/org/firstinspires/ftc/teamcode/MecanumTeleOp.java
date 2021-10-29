@@ -98,11 +98,11 @@ public class MecanumTeleOp extends LinearOpMode {
 
             if(servodrop) {
 
-                servoDrop.setPosition(1);
+                servoDrop.setPosition(-1);
 
             } else {
 
-                servoDrop.setPosition(-1);
+                servoDrop.setPosition(1);
 
             }
 
