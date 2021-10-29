@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp
@@ -44,6 +45,7 @@ public class MecanumTeleOp extends LinearOpMode {
         DcMotor frontrightDrive = hardwareMap.dcMotor.get("frontrightDrive");
         DcMotor backrightDrive = hardwareMap.dcMotor.get("backrightDrive");
         DcMotor carouselDrive = hardwareMap.dcMotor.get("carouselDrive");
+        Servo servoDrop = hardwareMap.servo.get("servoDrop");
 
         // Reverse the right side motors
         // Reverse left motors if you are using NeveRests
@@ -59,10 +61,17 @@ public class MecanumTeleOp extends LinearOpMode {
 
         while (opModeIsActive()) {
             double y = gamepad1.left_stick_y; // Remember, this is reversed!
-            double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
             double rx = gamepad1.right_stick_x;
+            double x = 0;
+            if (gamepad1.left_trigger > 0 && gamepad1.right_trigger < .05 ) {
+                x =  gamepad1.left_trigger * 1.1; // Counteract imperfect strafing
+            }
+            else if (gamepad1.left_trigger < .05 && gamepad1.right_trigger > 0) {
+                x = gamepad1.right_trigger * -1.1; // Counteract imperfect strafing;
+            }
             boolean carouselcounter = gamepad1.cross;
             boolean carouselclock = gamepad1.circle;
+            boolean servodrop = gamepad1.square;
 
             // Denominator is the largest motor power (absolute value) or 1
             // This ensures all the powers maintain the same ratio, but only when
@@ -85,6 +94,16 @@ public class MecanumTeleOp extends LinearOpMode {
 
                     carouselDrive.setPower(0);
                 }
+            }
+
+            if(servodrop) {
+
+                servoDrop.setPosition(1);
+
+            } else {
+
+                servoDrop.setPosition(-1);
+
             }
 
             frontleftDrive.setPower(frontLeftPower);
