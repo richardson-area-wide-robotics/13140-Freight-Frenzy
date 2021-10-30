@@ -78,6 +78,8 @@ public class red1WHAuton extends LinearOpMode {
         deliveryCounter(30, maximum);
         strafeRPos(8, slow);
         servoDrop(1, medium);
+        strafeRPos(-4,medium);
+        moveForward(4, medium);
         moveForward(-120, fast);
 
     }

@@ -72,14 +72,16 @@ public class blue1BasicAuton extends LinearOpMode {
 
         // *****************Dead reckoning list*************
         // Distances in inches, angles in deg, speed 0.0 to 0.6
+        //Start facing the wall
+        moveForward(-20, fast);
+        strafeRPos(-10, medium);
+        servoDrop(1,medium);
+        strafeRPos(4, fast);
+        moveForward(10, slow);
         strafeRPos(-16, slow);
-        moveForward(20, medium);
-        strafeRPos(6, slow);
-        deliveryCounter(-30, maximum);
-        strafeRPos(-8, slow);
-        servoDrop(1, medium);
-        strafeRPos(-12, slow);
-        moveForward(6, medium);
+        deliveryCounter(30,maximum);
+        moveForward(-10, fast);
+        strafeRPos(120,fast);
 
     }
 
