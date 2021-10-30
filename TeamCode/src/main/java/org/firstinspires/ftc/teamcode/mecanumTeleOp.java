@@ -60,14 +60,14 @@ public class mecanumTeleOp extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
-            double y = gamepad1.left_stick_y; // Remember, this is reversed!
-            double rx = gamepad1.right_stick_x;
+            double y = gamepad1.left_stick_y * 1; // Remember, this is reversed!
+            double rx = -gamepad1.right_stick_x;
             double x = 0;
-            if (gamepad1.left_trigger > 0 && gamepad1.right_trigger < .05 ) {
-                x =  gamepad1.left_trigger * 1.0; // Counteract imperfect strafing
+            if (gamepad1.left_trigger > 0 && gamepad1.right_trigger < .1 ) {
+                x =  gamepad1.left_trigger * 1; // Counteract imperfect strafing
             }
-            else if (gamepad1.left_trigger < .05 && gamepad1.right_trigger > 0) {
-                x = gamepad1.right_trigger * -1.0; // Counteract imperfect strafing;
+            else if (gamepad1.left_trigger < .1 && gamepad1.right_trigger > 0) {
+                x = gamepad1.right_trigger * -1; // Counteract imperfect strafing;
             }
             boolean carouselCounter = gamepad1.cross;
             boolean carouselClock = gamepad1.circle;

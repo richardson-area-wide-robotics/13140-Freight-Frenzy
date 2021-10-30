@@ -25,19 +25,19 @@ import com.qualcomm.robotcore.hardware.DcMotor;
         private double fast = 0.5; // Limit motor power to this value for Andymark RUN_USING_ENCODER mode
         private double medium = 0.3; // medium speed
         private double slow = 0.1; // slow speed
-        private double time = 6; // time
-        private double clicksPerInch = 87.5; // empirically measured
+        private double clicksPerInch = 57; // empirically measured
+        private double tol = .1 * clicksPerInch; //encoder tolerance
         
         @Override
-        public void runOpMode() throws InterruptedException {
+        public void runOpMode() {
             telemetry.setAutoClear(true);
 
 
             // Initialize the hardware variables.
-            frontleftDrive = hardwareMap.dcMotor.get("leftFront");
-            frontrightDrive = hardwareMap.dcMotor.get("rightFront");
-            backleftDrive = hardwareMap.dcMotor.get("leftRear");
-            backrightDrive = hardwareMap.dcMotor.get("rightRear");
+            frontleftDrive = hardwareMap.dcMotor.get("frontleftDrive");
+            frontrightDrive = hardwareMap.dcMotor.get("frontrightDrive");
+            backleftDrive = hardwareMap.dcMotor.get("backleftDrive");
+            backrightDrive = hardwareMap.dcMotor.get("backrightDrive");
             carouselDrive = hardwareMap.dcMotor.get("carouselDrive");
             servoDrive = hardwareMap.servo.get("servoDrive");
 
@@ -54,6 +54,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
             backleftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             backrightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             carouselDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            frontleftDrive.setTargetPosition(0);
+            frontrightDrive.setTargetPosition(0);
+            backleftDrive.setTargetPosition(0);
+            backrightDrive.setTargetPosition(0);
+            carouselDrive.setTargetPosition(0);
+
             frontleftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             frontrightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             backleftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -65,13 +72,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
             // *****************Dead reckoning list*************
             // Distances in inches, angles in deg, speed 0.0 to 0.6
-            strafeRPos(6, fast);
-            moveForward(16, medium);
-            strafeRPos(-6, medium);
-            deliveryCounter(12, maximum);
-            strafeRPos(8, fast);
-            servoDrop(1,medium);
-            strafeRPos(4,slow);
+            strafeRPos(16, slow);
+            moveForward(20, medium);
+            strafeRPos(-6, slow);
+            deliveryCounter(30, maximum);
+            strafeRPos(8, slow);
+            servoDrop(1, medium);
+            strafeRPos(12, slow);
+            moveForward(6, medium);
             
         }
 
@@ -100,11 +108,18 @@ import com.qualcomm.robotcore.hardware.DcMotor;
             backleftDrive.setPower(speed);
             backrightDrive.setPower(speed);
 
-            // Stop all motion;
-            frontleftDrive.setPower(0);
-            frontrightDrive.setPower(0);
-            backleftDrive.setPower(0);
-            backrightDrive.setPower(0);
+            while ( Math.abs(flPos - frontleftDrive.getCurrentPosition()) > tol
+                    || Math.abs(frPos - frontrightDrive.getCurrentPosition()) > tol
+                    || Math.abs(blPos - backleftDrive.getCurrentPosition()) > tol
+                    || Math.abs(brPos - backrightDrive.getCurrentPosition()) > tol) {
+                try {
+                    Thread.sleep(5);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
         }
 
         private void strafeRPos(int howMuch, double speed) {
@@ -117,10 +132,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
             brPos = backrightDrive.getCurrentPosition();
 
             // calculate new targets
-            flPos += howMuch * clicksPerInch;
-            frPos -= howMuch * clicksPerInch;
-            blPos -= howMuch * clicksPerInch;
-            brPos += howMuch * clicksPerInch;
+            flPos -= howMuch * clicksPerInch;
+            frPos += howMuch * clicksPerInch;
+            blPos += howMuch * clicksPerInch;
+            brPos -= howMuch * clicksPerInch;
 
             // move robot to new position
             frontleftDrive.setTargetPosition(flPos);
@@ -132,41 +147,49 @@ import com.qualcomm.robotcore.hardware.DcMotor;
             backleftDrive.setPower(speed);
             backrightDrive.setPower(speed);
 
-            // Stop all motion;
-            frontleftDrive.setPower(0);
-            frontrightDrive.setPower(0);
-            backleftDrive.setPower(0);
-            backrightDrive.setPower(0);
+            while ( Math.abs(flPos - frontleftDrive.getCurrentPosition()) > tol
+                    || Math.abs(frPos - frontrightDrive.getCurrentPosition()) > tol
+                    || Math.abs(blPos - backleftDrive.getCurrentPosition()) > tol
+                    || Math.abs(brPos - backrightDrive.getCurrentPosition()) > tol) {
+                try {
+                    Thread.sleep(5);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
+            }
         }
+
         
-        private void deliveryCounter(int time, double speed) {
-            
-            carouselDrive.setPower(1);
+        private void deliveryCounter(int howMuch, double speed) {
 
-            // Stop all motion;
-            frontleftDrive.setPower(0);
-            frontrightDrive.setPower(0);
-            backleftDrive.setPower(0);
-            backrightDrive.setPower(0);
-            carouselDrive.setPower(0);
+            carouselDrive.getCurrentPosition();
+            carouselDrive.setTargetPosition((int) (howMuch * clicksPerInch));
+            carouselDrive.setPower(speed);
+
+            while (carouselDrive.getCurrentPosition() < howMuch * clicksPerInch ) {
+
+                try {
+                    Thread.sleep(5);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
         }
 
-        private void servoDrop (int howMuch, double speed) throws InterruptedException {
+        private void servoDrop (int howMuch, double speed) {
             
             servoDrive.setPosition(1);
             servoDrive.setPosition(-1);
-            wait(2);
+
+            try {
+                Thread.sleep(2500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             servoDrive.setPosition(1);
-
-
-            // Stop all motion;
-            frontleftDrive.setPower(0);
-            frontrightDrive.setPower(0);
-            backleftDrive.setPower(0);
-            backrightDrive.setPower(0);
-            carouselDrive.setPower(0);
 
         }
     }
