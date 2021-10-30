@@ -35,9 +35,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp
-public class MecanumTeleOp extends LinearOpMode {
+public class mecanumTeleOp extends LinearOpMode {
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         // Declare our motors
         // Make sure your ID's match your configuration
         DcMotor frontleftDrive = hardwareMap.dcMotor.get("frontleftDrive");
@@ -45,7 +45,7 @@ public class MecanumTeleOp extends LinearOpMode {
         DcMotor frontrightDrive = hardwareMap.dcMotor.get("frontrightDrive");
         DcMotor backrightDrive = hardwareMap.dcMotor.get("backrightDrive");
         DcMotor carouselDrive = hardwareMap.dcMotor.get("carouselDrive");
-        Servo servoDrop = hardwareMap.servo.get("servoDrop");
+        Servo servoDrive = hardwareMap.servo.get("servoDrive");
 
         // Reverse the right side motors
         // Reverse left motors if you are using NeveRests
@@ -64,14 +64,14 @@ public class MecanumTeleOp extends LinearOpMode {
             double rx = gamepad1.right_stick_x;
             double x = 0;
             if (gamepad1.left_trigger > 0 && gamepad1.right_trigger < .05 ) {
-                x =  gamepad1.left_trigger * 1.1; // Counteract imperfect strafing
+                x =  gamepad1.left_trigger * 1.0; // Counteract imperfect strafing
             }
             else if (gamepad1.left_trigger < .05 && gamepad1.right_trigger > 0) {
-                x = gamepad1.right_trigger * -1.1; // Counteract imperfect strafing;
+                x = gamepad1.right_trigger * -1.0; // Counteract imperfect strafing;
             }
-            boolean carouselcounter = gamepad1.cross;
-            boolean carouselclock = gamepad1.circle;
-            boolean servodrop = gamepad1.square;
+            boolean carouselCounter = gamepad1.cross;
+            boolean carouselClock = gamepad1.circle;
+            boolean servoDrop = gamepad1.square;
 
             // Denominator is the largest motor power (absolute value) or 1
             // This ensures all the powers maintain the same ratio, but only when
@@ -82,12 +82,12 @@ public class MecanumTeleOp extends LinearOpMode {
             double frontRightPower = (y - x - rx) / denominator;
             double backRightPower = (y + x - rx) / denominator;
 
-            if(carouselclock) {
+            if(carouselClock) {
                 carouselDrive.setPower(1);
 
             }else {
 
-                if (carouselcounter) {
+                if (carouselCounter) {
                     carouselDrive.setPower(-1);
 
                 }else {
@@ -96,13 +96,13 @@ public class MecanumTeleOp extends LinearOpMode {
                 }
             }
 
-            if(servodrop) {
+            if(servoDrop) {
 
-                servoDrop.setPosition(-1);
+                servoDrive.setPosition(-1);
 
             } else {
 
-                servoDrop.setPosition(1);
+                servoDrive.setPosition(1);
 
             }
 

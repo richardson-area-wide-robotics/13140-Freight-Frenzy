@@ -5,9 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-    @Autonomous(name="AutoRedBoth", group="Linear Opmode")  // @TeleOp(...) is the other common choice
+    @Autonomous(name="red1BasicAuton", group="Linear Opmode")  // @TeleOp(...) is the other common choice
 // @Disabled
-    public class Red1BasicAuton extends LinearOpMode {
+    public class red1BasicAuton extends LinearOpMode {
 
         // Declare Devices
         DcMotor frontleftDrive = null;
@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
         DcMotor backleftDrive = null;
         DcMotor backrightDrive = null;
         DcMotor carouselDrive = null;
-        Servo servoDrop = null;
+        Servo servoDrive = null;
         
         // drive motor position variables
         private int flPos; private int frPos; private int blPos; private int brPos;
@@ -39,7 +39,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
             backleftDrive = hardwareMap.dcMotor.get("leftRear");
             backrightDrive = hardwareMap.dcMotor.get("rightRear");
             carouselDrive = hardwareMap.dcMotor.get("carouselDrive");
-            servoDrop = hardwareMap.servo.get("servoDrop");
+            servoDrive = hardwareMap.servo.get("servoDrive");
 
             // The right motors need reversing
             frontrightDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -155,10 +155,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
         private void servoDrop (int howMuch, double speed) throws InterruptedException {
             
-            servoDrop.setPosition(1);
-            servoDrop.setPosition(-1);
+            servoDrive.setPosition(1);
+            servoDrive.setPosition(-1);
             wait(2);
-            servoDrop.setPosition(1);
+            servoDrive.setPosition(1);
 
 
             // Stop all motion;
