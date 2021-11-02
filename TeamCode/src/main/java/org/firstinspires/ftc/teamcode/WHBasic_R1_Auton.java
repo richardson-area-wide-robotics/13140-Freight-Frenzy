@@ -1,16 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name="R2_Nin_22_Auton", group="Linear Opmode")  // @TeleOp(...) is the other common choice
-
-// Start robot with left side against wall & front against end of tile
-
-public class R2_Nin_22_Auton extends LinearOpMode {
+@Autonomous(name="red1WHAuton", group="Linear Opmode")  // @TeleOp(...) is the other common choice
+// @Disabled
+public class WHBasic_R1_Auton extends LinearOpMode {
 
     // Declare Devices
     DcMotor frontleftDrive = null;
@@ -24,12 +21,12 @@ public class R2_Nin_22_Auton extends LinearOpMode {
     private int flPos; private int frPos; private int blPos; private int brPos;
 
     // operational constants
-
-    // Motor rotation clicks per inch traveled
-    private final double clicksPerInch =  44.563384; // Empirically measured
-
-    // Encoders
-    private final double tol = .1 * clicksPerInch; // Encoder tolerance
+    private double maximum = 1; // Save for Carousel Mechanism
+    private double fast = 0.5; // Limit motor power to this value for Andymark RUN_USING_ENCODER mode
+    private double medium = 0.3; // medium speed
+    private double slow = 0.1; // slow speed
+    private double clicksPerInch = 57; // empirically measured
+    private double tol = .1 * clicksPerInch; //encoder tolerance
 
     @Override
     public void runOpMode() {
@@ -70,29 +67,20 @@ public class R2_Nin_22_Auton extends LinearOpMode {
         backrightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         carouselDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        // Rotation speeds
-        final double comp = 1; // Complete motor speed
-        final double flex = 0.7; // Flexible area to move in motor speed
-        final double taut = 0.4; // Taut constraints on movement of motor speed
-        final double prec = 0.1; // Precise movements required for motor speed
-
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        // Steps taken during autonomous
-        // Distances in inches, angles in deg, speed
-        strafeRPos(1, flex);
-        moveForward(1, taut);
-        strafeRPos(-1, flex);
-        moveForward(1, prec);
-        strafeRPos(-1, prec);
-        deliveryCar(1, comp);
-        strafeRPos(1, flex);
-        servoDrop(1, comp);
-        strafeRPos(1, flex);
-        moveForward(-1, flex);
-        strafeRPos(-1, taut);
-        moveForward(-1, comp);
+        // *****************Dead reckoning list*************
+        // Distances in inches, angles in deg, speed 0.0 to 0.6
+        strafeRPos(16, slow);
+        moveForward(20, medium);
+        strafeRPos(-6, slow);
+        deliveryCounter(30, maximum);
+        strafeRPos(8, slow);
+        servoDrop(1, medium);
+        strafeRPos(-4,medium);
+        moveForward(4, medium);
+        moveForward(-120, fast);
 
     }
 
@@ -130,7 +118,9 @@ public class R2_Nin_22_Auton extends LinearOpMode {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
         }
+
     }
 
     private void strafeRPos(int howMuch, double speed) {
@@ -167,11 +157,12 @@ public class R2_Nin_22_Auton extends LinearOpMode {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
         }
     }
 
 
-    private void deliveryCar(int howMuch, double speed) {
+    private void deliveryCounter(int howMuch, double speed) {
 
         carouselDrive.getCurrentPosition();
         carouselDrive.setTargetPosition((int) (howMuch * clicksPerInch));
@@ -185,6 +176,7 @@ public class R2_Nin_22_Auton extends LinearOpMode {
                 e.printStackTrace();
             }
         }
+
     }
 
     private void servoDrop (int howMuch, double speed) {
@@ -202,3 +194,7 @@ public class R2_Nin_22_Auton extends LinearOpMode {
 
     }
 }
+
+
+
+    

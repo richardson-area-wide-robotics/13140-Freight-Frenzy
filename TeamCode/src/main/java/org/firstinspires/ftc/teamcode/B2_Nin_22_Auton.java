@@ -26,17 +26,10 @@ public class B2_Nin_22_Auton extends LinearOpMode {
     // operational constants
 
     // Motor rotation clicks per inch traveled
-    private double clicksPerInch =  44.563384; // Empirically measured
-    private double clicksPerDeg =  1.555556; // 560 clicks / 360 deg
-
-    // Rotation speeds
-    private double comp = 1; // Complete motor speed
-    private double flex = 0.7; // Flexible area to move in motor speed
-    private double taut = 0.4; // Taut constraints on movement of motor speed
-    private double prec = 0.1; // Precise movements required for motor speed
+    private final double clicksPerInch =  44.563384; // Empirically measured
 
     // Encoders
-    private double tol = .1 * clicksPerInch; // Encoder tolerance
+    private final double tol = .1 * clicksPerInch; // Encoder tolerance
 
     @Override
     public void runOpMode() {
@@ -76,6 +69,12 @@ public class B2_Nin_22_Auton extends LinearOpMode {
         backleftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         backrightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         carouselDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        // Rotation speeds
+        final double comp = 1; // Complete motor speed
+        final double flex = 0.7; // Flexible area to move in motor speed
+        final double taut = 0.4; // Taut constraints on movement of motor speed
+        final double prec = 0.1; // Precise movements required for motor speed
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -174,6 +173,7 @@ public class B2_Nin_22_Auton extends LinearOpMode {
 
     private void turnClockwise(int whatAngle, double speed) {
         // whatAngle is in degrees. A negative whatAngle turns counterclockwise.
+        double clicksPerDeg =  1.555556; // 560 clicks / 360 deg
 
         // fetch motor positions
         flPos = frontleftDrive.getCurrentPosition();
