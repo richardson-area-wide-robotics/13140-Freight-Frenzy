@@ -81,18 +81,19 @@ public class B1_Nin_22_Auton extends LinearOpMode {
 
         // Steps taken during autonomous
         // Distances in inches, angles in deg, speed
-        moveForward(-1, flex);
-        strafeRPos(-1, taut);
-        moveForward(1, prec);
-        deliveryCar(1, comp);
-        moveForward(-1, flex);
-        servoDrop(1, comp);
-        strafeRPos(1, flex);
-        moveForward(-1, flex);
-        turnClockwise(-90, flex);
-        moveForward(-1, flex);
-        strafeRPos(1, taut);
-        moveForward(-1, comp);
+        moveForward(-10, flex); // move backward: past carousel
+        strafeRPos(-12, taut); // move left: against wall
+        moveForward(3, prec); // move forward: slight adjustment
+        strafeRPos(-3,prec); // move left: slight adjustment
+        deliveryCar(12, comp); // deliver duck: make duck fall
+        moveForward(-6, flex); // move backward: into SU
+        servoDrop(1, comp); // drop servo: preload drop
+        strafeRPos(6, flex); // move right: out of preload box's way
+        moveForward(-18, flex); // move backward: past alliance hub
+        turnClockwise(-90, flex); // rotate 90 counter: back to WH
+        moveForward(-32, flex); // move backward: against obstacle
+        strafeRPos(18, taut); // move right: past long obstacle
+        moveForward(-18, comp); // move backward: against WH wall
 
     }
 
