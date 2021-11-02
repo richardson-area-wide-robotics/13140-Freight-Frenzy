@@ -1,13 +1,16 @@
 package org.firstinspires.ftc.teamcode;
 
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name="red1WHAuton", group="Linear Opmode")  // @TeleOp(...) is the other common choice
-// @Disabled
-public class red1WHAuton extends LinearOpMode {
+@Autonomous(name="R2_Nin_22_Auton", group="Linear Opmode")  // @TeleOp(...) is the other common choice
+
+// Start robot with left side against wall & front against end of tile
+
+public class R2_Nin_22_Auton extends LinearOpMode {
 
     // Declare Devices
     DcMotor frontleftDrive = null;
@@ -21,12 +24,18 @@ public class red1WHAuton extends LinearOpMode {
     private int flPos; private int frPos; private int blPos; private int brPos;
 
     // operational constants
-    private double maximum = 1; // Save for Carousel Mechanism
-    private double fast = 0.5; // Limit motor power to this value for Andymark RUN_USING_ENCODER mode
-    private double medium = 0.3; // medium speed
-    private double slow = 0.1; // slow speed
-    private double clicksPerInch = 57; // empirically measured
-    private double tol = .1 * clicksPerInch; //encoder tolerance
+
+    // Motor rotation clicks per inch traveled
+    private double clicksPerInch =  44.563384; // Empirically measured
+
+    // Rotation speeds
+    private double comp = 1; // Complete motor speed
+    private double flex = 0.7; // Flexible area to move in motor speed
+    private double taut = 0.4; // Taut constraints on movement of motor speed
+    private double prec = 0.1; // Precise movements required for motor speed
+
+    // Encoders
+    private double tol = .1 * clicksPerInch; // Encoder tolerance
 
     @Override
     public void runOpMode() {
@@ -70,17 +79,20 @@ public class red1WHAuton extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        // *****************Dead reckoning list*************
-        // Distances in inches, angles in deg, speed 0.0 to 0.6
-        strafeRPos(16, slow);
-        moveForward(20, medium);
-        strafeRPos(-6, slow);
-        deliveryCounter(30, maximum);
-        strafeRPos(8, slow);
-        servoDrop(1, medium);
-        strafeRPos(-4,medium);
-        moveForward(4, medium);
-        moveForward(-120, fast);
+        // Steps taken during autonomous
+        // Distances in inches, angles in deg, speed
+        strafeRPos(1, flex);
+        moveForward(1, taut);
+        strafeRPos(-1, flex);
+        moveForward(1, prec);
+        strafeRPos(-1, prec);
+        deliveryCar(1, comp);
+        strafeRPos(1, flex);
+        servoDrop(1, comp);
+        strafeRPos(1, flex);
+        moveForward(-1, flex);
+        strafeRPos(-1, taut);
+        moveForward(-1, comp);
 
     }
 
@@ -118,9 +130,7 @@ public class red1WHAuton extends LinearOpMode {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
         }
-
     }
 
     private void strafeRPos(int howMuch, double speed) {
@@ -157,12 +167,11 @@ public class red1WHAuton extends LinearOpMode {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
         }
     }
 
 
-    private void deliveryCounter(int howMuch, double speed) {
+    private void deliveryCar(int howMuch, double speed) {
 
         carouselDrive.getCurrentPosition();
         carouselDrive.setTargetPosition((int) (howMuch * clicksPerInch));
@@ -176,7 +185,6 @@ public class red1WHAuton extends LinearOpMode {
                 e.printStackTrace();
             }
         }
-
     }
 
     private void servoDrop (int howMuch, double speed) {
@@ -194,7 +202,3 @@ public class red1WHAuton extends LinearOpMode {
 
     }
 }
-
-
-
-    

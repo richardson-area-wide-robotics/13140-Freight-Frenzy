@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
     @Autonomous(name="red1BasicAuton", group="Linear Opmode")  // @TeleOp(...) is the other common choice
 // @Disabled
-    public class red1BasicAuton extends LinearOpMode {
+    public class SUBasic_R1_18_Auton extends LinearOpMode {
 
         // Declare Devices
         DcMotor frontleftDrive = null;
