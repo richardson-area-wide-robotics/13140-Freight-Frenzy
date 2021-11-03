@@ -6,11 +6,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name="B2_Nin_22_Auton", group="Linear Opmode")  // @TeleOp(...) is the other common choice
+@Autonomous(name="R1_11302_18pts", group="Linear Opmode")  // @TeleOp(...) is the other common choice
 
-// Start robot with front against wall & left side against tile
+// Start robot with left side against wall & front against end of tile
 
-public class B2_Nin_22_Auton extends LinearOpMode {
+public class R1_11302_18pts extends LinearOpMode {
 
     // Declare Devices
     DcMotor frontleftDrive = null;
@@ -81,20 +81,15 @@ public class B2_Nin_22_Auton extends LinearOpMode {
 
         // Steps taken during autonomous
         // Distances in inches, angles in deg, speed
-        moveForward(-32, flex); // move backward: past alliance hub
-        strafeRPos(-36, taut); // move left: against wall
-        moveForward(20, flex); // move forward: against carousel
+
+        strafeRPos(10, flex); // move right: past carousel
+        moveForward(12, taut); // move forward: against wall
         strafeRPos(-3, prec); // move left: slight adjustment
         moveForward(3, prec); // move forward: slight adjustment
         deliveryCar(12, comp); // deliver duck: make duck fall
-        moveForward(-6, flex); // move backward: into SU
+        strafeRPos(16, flex); // move right: into SU
         servoDrop(1, comp); // drop servo: preload drop
-        strafeRPos(6, flex); // move right: out of preload box's way
-        moveForward(-18, flex); // move backward: past alliance hub
-        turnClockwise(-90, flex); // rotate 90 counter: back to WH
-        moveForward(-32, flex); // move backward: against obstacle
-        strafeRPos(18, taut); // move right: past long obstacle
-        moveForward(-18, comp); // move backward: against WH wall
+        strafeRPos(-8, flex); // move left: park in SU
 
     }
 
@@ -172,44 +167,6 @@ public class B2_Nin_22_Auton extends LinearOpMode {
         }
     }
 
-    private void turnClockwise(int whatAngle, double speed) {
-        // whatAngle is in degrees. A negative whatAngle turns counterclockwise.
-        double clicksPerDeg =  1.555556; // 560 clicks / 360 deg
-
-        // fetch motor positions
-        flPos = frontleftDrive.getCurrentPosition();
-        frPos = frontrightDrive.getCurrentPosition();
-        blPos = backleftDrive.getCurrentPosition();
-        brPos = backrightDrive.getCurrentPosition();
-
-        // calculate new targets
-        flPos += whatAngle * clicksPerDeg;
-        frPos -= whatAngle * clicksPerDeg;
-        brPos += whatAngle * clicksPerDeg;
-        brPos -= whatAngle * clicksPerDeg;
-
-        // move robot to new position
-        frontleftDrive.setTargetPosition(flPos);
-        frontrightDrive.setTargetPosition(frPos);
-        backleftDrive.setTargetPosition(brPos);
-        backrightDrive.setTargetPosition(brPos);
-        frontleftDrive.setPower(speed);
-        frontrightDrive.setPower(speed);
-        backleftDrive.setPower(speed);
-        backrightDrive.setPower(speed);
-
-        while (frontleftDrive.getCurrentPosition() < whatAngle * clicksPerDeg
-                || frontrightDrive.getCurrentPosition() < whatAngle * clicksPerDeg
-                || backleftDrive.getCurrentPosition() < whatAngle * clicksPerDeg
-                || backrightDrive.getCurrentPosition() < whatAngle * clicksPerDeg) {
-
-            try {
-                Thread.sleep(5);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     private void deliveryCar(int howMuch, double speed) {
 

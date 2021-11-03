@@ -1,13 +1,16 @@
 package org.firstinspires.ftc.teamcode;
 
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name="red1WHAuton", group="Linear Opmode")  // @TeleOp(...) is the other common choice
-// @Disabled
-public class WHBasic_R1_Auton extends LinearOpMode {
+@Autonomous(name="B2_12202_22pts", group="Linear Opmode")  // @TeleOp(...) is the other common choice
+
+// Start robot with front against wall & left side against tile
+
+public class B2_12202_22pts extends LinearOpMode {
 
     // Declare Devices
     DcMotor frontleftDrive = null;
@@ -21,12 +24,12 @@ public class WHBasic_R1_Auton extends LinearOpMode {
     private int flPos; private int frPos; private int blPos; private int brPos;
 
     // operational constants
-    private double maximum = 1; // Save for Carousel Mechanism
-    private double fast = 0.5; // Limit motor power to this value for Andymark RUN_USING_ENCODER mode
-    private double medium = 0.3; // medium speed
-    private double slow = 0.1; // slow speed
-    private double clicksPerInch = 57; // empirically measured
-    private double tol = .1 * clicksPerInch; //encoder tolerance
+
+    // Motor rotation clicks per inch traveled
+    private final double clicksPerInch =  44.563384; // Empirically measured
+
+    // Encoders
+    private final double tol = .1 * clicksPerInch; // Encoder tolerance
 
     @Override
     public void runOpMode() {
@@ -67,20 +70,31 @@ public class WHBasic_R1_Auton extends LinearOpMode {
         backrightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         carouselDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+        // Rotation speeds
+        final double comp = 1; // Complete motor speed
+        final double flex = 0.7; // Flexible area to move in motor speed
+        final double taut = 0.4; // Taut constraints on movement of motor speed
+        final double prec = 0.1; // Precise movements required for motor speed
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        // *****************Dead reckoning list*************
-        // Distances in inches, angles in deg, speed 0.0 to 0.6
-        strafeRPos(16, slow);
-        moveForward(20, medium);
-        strafeRPos(-6, slow);
-        deliveryCounter(30, maximum);
-        strafeRPos(8, slow);
-        servoDrop(1, medium);
-        strafeRPos(-4,medium);
-        moveForward(4, medium);
-        moveForward(-120, fast);
+        // Steps taken during autonomous
+        // Distances in inches, angles in deg, speed
+        moveForward(-32, flex); // move backward: past alliance hub
+        strafeRPos(-36, taut); // move left: against wall
+        moveForward(20, flex); // move forward: against carousel
+        strafeRPos(-3, prec); // move left: slight adjustment
+        moveForward(3, prec); // move forward: slight adjustment
+        deliveryCar(12, comp); // deliver duck: make duck fall
+        moveForward(-6, flex); // move backward: into SU
+        servoDrop(1, comp); // drop servo: preload drop
+        strafeRPos(6, flex); // move right: out of preload box's way
+        moveForward(-18, flex); // move backward: past alliance hub
+        turnClockwise(-90, flex); // rotate 90 counter: back to WH
+        moveForward(-32, flex); // move backward: against obstacle
+        strafeRPos(18, taut); // move right: past long obstacle
+        moveForward(-18, comp); // move backward: against WH wall
 
     }
 
@@ -118,9 +132,7 @@ public class WHBasic_R1_Auton extends LinearOpMode {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
         }
-
     }
 
     private void strafeRPos(int howMuch, double speed) {
@@ -157,12 +169,49 @@ public class WHBasic_R1_Auton extends LinearOpMode {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
         }
     }
 
+    private void turnClockwise(int whatAngle, double speed) {
+        // whatAngle is in degrees. A negative whatAngle turns counterclockwise.
+        double clicksPerDeg =  1.555556; // 560 clicks / 360 deg
 
-    private void deliveryCounter(int howMuch, double speed) {
+        // fetch motor positions
+        flPos = frontleftDrive.getCurrentPosition();
+        frPos = frontrightDrive.getCurrentPosition();
+        blPos = backleftDrive.getCurrentPosition();
+        brPos = backrightDrive.getCurrentPosition();
+
+        // calculate new targets
+        flPos += whatAngle * clicksPerDeg;
+        frPos -= whatAngle * clicksPerDeg;
+        brPos += whatAngle * clicksPerDeg;
+        brPos -= whatAngle * clicksPerDeg;
+
+        // move robot to new position
+        frontleftDrive.setTargetPosition(flPos);
+        frontrightDrive.setTargetPosition(frPos);
+        backleftDrive.setTargetPosition(brPos);
+        backrightDrive.setTargetPosition(brPos);
+        frontleftDrive.setPower(speed);
+        frontrightDrive.setPower(speed);
+        backleftDrive.setPower(speed);
+        backrightDrive.setPower(speed);
+
+        while (frontleftDrive.getCurrentPosition() < whatAngle * clicksPerDeg
+                || frontrightDrive.getCurrentPosition() < whatAngle * clicksPerDeg
+                || backleftDrive.getCurrentPosition() < whatAngle * clicksPerDeg
+                || backrightDrive.getCurrentPosition() < whatAngle * clicksPerDeg) {
+
+            try {
+                Thread.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void deliveryCar(int howMuch, double speed) {
 
         carouselDrive.getCurrentPosition();
         carouselDrive.setTargetPosition((int) (howMuch * clicksPerInch));
@@ -176,7 +225,6 @@ public class WHBasic_R1_Auton extends LinearOpMode {
                 e.printStackTrace();
             }
         }
-
     }
 
     private void servoDrop (int howMuch, double speed) {
@@ -194,7 +242,3 @@ public class WHBasic_R1_Auton extends LinearOpMode {
 
     }
 }
-
-
-
-    

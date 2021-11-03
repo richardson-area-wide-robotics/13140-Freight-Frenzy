@@ -3,14 +3,14 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name="R1_Nin_22_Auton", group="Linear Opmode")  // @TeleOp(...) is the other common choice
+@Autonomous(name="R2_12202_22pts", group="Linear Opmode")  // @TeleOp(...) is the other common choice
 
 // Start robot with left side against wall & front against end of tile
 
-public class R1_Nin_22_Auton extends LinearOpMode {
+public class R2_12202_22pts extends LinearOpMode {
 
     // Declare Devices
     DcMotor frontleftDrive = null;
@@ -81,11 +81,11 @@ public class R1_Nin_22_Auton extends LinearOpMode {
 
         // Steps taken during autonomous
         // Distances in inches, angles in deg, speed
-
-        strafeRPos(10, flex); // move right: past carousel
-        moveForward(12, taut); // move forward: against wall
-        strafeRPos(-3, prec); // move left: slight adjustment
+        strafeRPos(32, flex); // move right: past alliance hub
+        moveForward(36, taut); // move forward: against wall
+        strafeRPos(-20, flex); // move left: against carousel
         moveForward(3, prec); // move forward: slight adjustment
+        strafeRPos(-3, prec); // move left: slight adjustment
         deliveryCar(12, comp); // deliver duck: make duck fall
         strafeRPos(16, flex); // move right: into SU
         servoDrop(1, comp); // drop servo: preload drop
