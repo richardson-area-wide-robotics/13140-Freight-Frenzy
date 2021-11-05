@@ -82,7 +82,7 @@ public class R1_11302_18pts extends LinearOpMode {
         // Steps taken during autonomous
         // Distances in inches, angles in deg, speed
 
-        strafeRPos(10, flex); // move right: past carousel
+        strafeRPos(16, flex); // move right: past carousel
         moveForward(12, taut); // move forward: against wall
         strafeRPos(-3, prec); // move left: slight adjustment
         moveForward(3, prec); // move forward: slight adjustment
@@ -108,15 +108,17 @@ public class R1_11302_18pts extends LinearOpMode {
         blPos -= howMuch * clicksPerInch;
         brPos -= howMuch * clicksPerInch;
 
+        frontleftDrive.setPower(speed);
+        frontrightDrive.setPower(speed);
+        backleftDrive.setPower(speed);
+        backrightDrive.setPower(speed);
+
         // move robot to new position
         frontleftDrive.setTargetPosition(flPos);
         frontrightDrive.setTargetPosition(frPos);
         backleftDrive.setTargetPosition(blPos);
         backrightDrive.setTargetPosition(brPos);
-        frontleftDrive.setPower(speed);
-        frontrightDrive.setPower(speed);
-        backleftDrive.setPower(speed);
-        backrightDrive.setPower(speed);
+
 
         while ( Math.abs(flPos - frontleftDrive.getCurrentPosition()) > tol
                 || Math.abs(frPos - frontrightDrive.getCurrentPosition()) > tol
@@ -145,15 +147,17 @@ public class R1_11302_18pts extends LinearOpMode {
         blPos += howMuch * clicksPerInch;
         brPos -= howMuch * clicksPerInch;
 
+        frontleftDrive.setPower(speed);
+        frontrightDrive.setPower(speed);
+        backleftDrive.setPower(speed);
+        backrightDrive.setPower(speed);
+
         // move robot to new position
         frontleftDrive.setTargetPosition(flPos);
         frontrightDrive.setTargetPosition(frPos);
         backleftDrive.setTargetPosition(blPos);
         backrightDrive.setTargetPosition(brPos);
-        frontleftDrive.setPower(speed);
-        frontrightDrive.setPower(speed);
-        backleftDrive.setPower(speed);
-        backrightDrive.setPower(speed);
+
 
         while ( Math.abs(flPos - frontleftDrive.getCurrentPosition()) > tol
                 || Math.abs(frPos - frontrightDrive.getCurrentPosition()) > tol
@@ -171,8 +175,9 @@ public class R1_11302_18pts extends LinearOpMode {
     private void deliveryCar(int howMuch, double speed) {
 
         carouselDrive.getCurrentPosition();
-        carouselDrive.setTargetPosition((int) (howMuch * clicksPerInch));
         carouselDrive.setPower(speed);
+        carouselDrive.setTargetPosition((int) (howMuch * clicksPerInch));
+
 
         while (carouselDrive.getCurrentPosition() < howMuch * clicksPerInch ) {
 

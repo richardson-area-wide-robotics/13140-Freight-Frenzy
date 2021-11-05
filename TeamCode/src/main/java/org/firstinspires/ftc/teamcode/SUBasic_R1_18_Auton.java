@@ -99,14 +99,16 @@ import com.qualcomm.robotcore.hardware.DcMotor;
             brPos -= howMuch * clicksPerInch;
 
             // move robot to new position
-            frontleftDrive.setTargetPosition(flPos);
-            frontrightDrive.setTargetPosition(frPos);
-            backleftDrive.setTargetPosition(blPos);
-            backrightDrive.setTargetPosition(brPos);
             frontleftDrive.setPower(speed);
             frontrightDrive.setPower(speed);
             backleftDrive.setPower(speed);
             backrightDrive.setPower(speed);
+
+            frontleftDrive.setTargetPosition(flPos);
+            frontrightDrive.setTargetPosition(frPos);
+            backleftDrive.setTargetPosition(blPos);
+            backrightDrive.setTargetPosition(brPos);
+
 
             while ( Math.abs(flPos - frontleftDrive.getCurrentPosition()) > tol
                     || Math.abs(frPos - frontrightDrive.getCurrentPosition()) > tol
@@ -138,14 +140,16 @@ import com.qualcomm.robotcore.hardware.DcMotor;
             brPos -= howMuch * clicksPerInch;
 
             // move robot to new position
-            frontleftDrive.setTargetPosition(flPos);
-            frontrightDrive.setTargetPosition(frPos);
-            backleftDrive.setTargetPosition(blPos);
-            backrightDrive.setTargetPosition(brPos);
             frontleftDrive.setPower(speed);
             frontrightDrive.setPower(speed);
             backleftDrive.setPower(speed);
             backrightDrive.setPower(speed);
+
+            frontleftDrive.setTargetPosition(flPos);
+            frontrightDrive.setTargetPosition(frPos);
+            backleftDrive.setTargetPosition(blPos);
+            backrightDrive.setTargetPosition(brPos);
+
 
             while ( Math.abs(flPos - frontleftDrive.getCurrentPosition()) > tol
                     || Math.abs(frPos - frontrightDrive.getCurrentPosition()) > tol
