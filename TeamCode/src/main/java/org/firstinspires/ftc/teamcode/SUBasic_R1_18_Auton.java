@@ -73,18 +73,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
             // *****************Dead reckoning list*************
             // Distances in inches, angles in deg, speed 0.0 to 0.6
-            strafeRPos(50, slow);
-            strafeRPos(-50,slow);
-            strafeRPos(50,fast);
-            strafeRPos(-50,fast);
-            //strafeRPos(16, slow);
-            //moveForward(20, medium);
-            //strafeRPos(-4, slow);
-            //deliveryCounter(-30, maximum);
-            //strafeRPos(8, slow);
-            //servoDrop(1, medium);
-            //strafeRPos(12, slow);
-            //moveForward(6, medium);
+            strafeRPos(16, slow);
+            moveForward(20, medium);
+            strafeRPos(-4, slow);
+            deliveryCounter(-30, maximum);
+            strafeRPos(8, slow);
+            servoDrop(1, medium);
+            strafeRPos(12, slow);
+            moveForward(6, medium);
             
         }
 
