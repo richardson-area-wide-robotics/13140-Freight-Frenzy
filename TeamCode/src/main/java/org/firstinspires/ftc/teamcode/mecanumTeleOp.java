@@ -64,13 +64,13 @@ public class mecanumTeleOp extends LinearOpMode {
             double rx = -gamepad1.right_stick_x;
             double x = 0;
             if (gamepad1.left_trigger > 0 && gamepad1.right_trigger < .1 ) {
-                x =  gamepad1.left_trigger * 1; // Counteract imperfect strafing
+                x =  gamepad1.left_trigger * .5; // Counteract imperfect strafing
             }
             else if (gamepad1.left_trigger < .1 && gamepad1.right_trigger > 0) {
-                x = gamepad1.right_trigger * -1; // Counteract imperfect strafing;
+                x = gamepad1.right_trigger * -.5; // Counteract imperfect strafing;
             }
-            boolean carouselCounter = gamepad1.cross;
-            boolean carouselClock = gamepad1.circle;
+            boolean carouselClock = gamepad1.cross;
+            boolean carouselCounter = gamepad1.circle;
             boolean servoDrop = gamepad1.square;
 
             // Denominator is the largest motor power (absolute value) or 1
@@ -78,8 +78,8 @@ public class mecanumTeleOp extends LinearOpMode {
             // at least one is out of the range [-1, 1]
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
             double frontLeftPower = (y + x + rx) / denominator;
-            double backLeftPower = (y - x + rx) / denominator;
-            double frontRightPower = (y - x - rx) / denominator;
+            double backLeftPower = (y - x*1.11 + rx) / denominator;
+            double frontRightPower = (y - x - rx)  / denominator;
             double backRightPower = (y + x - rx) / denominator;
 
             if(carouselClock) {

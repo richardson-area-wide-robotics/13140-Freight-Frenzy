@@ -134,7 +134,6 @@ public class B2_12202_22pts extends LinearOpMode {
             }
         }
     }
-
     private void strafeRPos(int howMuch, double speed) {
         // howMuch is in inches. A negative howMuch moves backward.
 
@@ -151,14 +150,16 @@ public class B2_12202_22pts extends LinearOpMode {
         brPos -= howMuch * clicksPerInch;
 
         // move robot to new position
+        frontleftDrive.setPower(speed);
+        backrightDrive.setPower(speed);
+        frontrightDrive.setPower(speed);
+        backleftDrive.setPower(speed);
+
         frontleftDrive.setTargetPosition(flPos);
         frontrightDrive.setTargetPosition(frPos);
         backleftDrive.setTargetPosition(blPos);
         backrightDrive.setTargetPosition(brPos);
-        frontleftDrive.setPower(speed);
-        frontrightDrive.setPower(speed);
-        backleftDrive.setPower(speed);
-        backrightDrive.setPower(speed);
+
 
         while ( Math.abs(flPos - frontleftDrive.getCurrentPosition()) > tol
                 || Math.abs(frPos - frontrightDrive.getCurrentPosition()) > tol
@@ -166,9 +167,22 @@ public class B2_12202_22pts extends LinearOpMode {
                 || Math.abs(brPos - backrightDrive.getCurrentPosition()) > tol) {
             try {
                 Thread.sleep(5);
+                int flRel = Math.abs(frontleftDrive.getTargetPosition() - frontleftDrive.getCurrentPosition());
+                int frRel = Math.abs(frontrightDrive.getTargetPosition() - frontrightDrive.getCurrentPosition());
+                int blRel = Math.abs(backleftDrive.getTargetPosition() - backleftDrive.getCurrentPosition());
+                int brRel = Math.abs(backrightDrive.getTargetPosition() - backrightDrive.getCurrentPosition());
+
+                int avg = ((flRel+frRel+blRel+brRel)/4);
+
+                frontleftDrive.setPower(speed*(1+.01*(flRel - avg)));
+                frontrightDrive.setPower(speed*(1+.01*(frRel - avg)));
+                backrightDrive.setPower(speed*(1+.01*(blRel - avg)));
+                backleftDrive.setPower(speed*(1+.01*(brRel - avg)));
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
         }
     }
 

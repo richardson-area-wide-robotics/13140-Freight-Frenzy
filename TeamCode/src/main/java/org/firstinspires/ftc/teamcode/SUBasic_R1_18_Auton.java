@@ -19,6 +19,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
         
         // drive motor position variables
         private int flPos; private int frPos; private int blPos; private int brPos;
+        private int carPos;
 
         // operational constants
         private double maximum = 1; // Save for Carousel Mechanism
@@ -72,14 +73,18 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
             // *****************Dead reckoning list*************
             // Distances in inches, angles in deg, speed 0.0 to 0.6
-            strafeRPos(16, slow);
-            moveForward(20, medium);
-            strafeRPos(-6, slow);
-            deliveryCounter(30, maximum);
-            strafeRPos(8, slow);
-            servoDrop(1, medium);
-            strafeRPos(12, slow);
-            moveForward(6, medium);
+            strafeRPos(50, slow);
+            strafeRPos(-50,slow);
+            strafeRPos(50,fast);
+            strafeRPos(-50,fast);
+            //strafeRPos(16, slow);
+            //moveForward(20, medium);
+            //strafeRPos(-4, slow);
+            //deliveryCounter(-30, maximum);
+            //strafeRPos(8, slow);
+            //servoDrop(1, medium);
+            //strafeRPos(12, slow);
+            //moveForward(6, medium);
             
         }
 
@@ -141,9 +146,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
             // move robot to new position
             frontleftDrive.setPower(speed);
+            backrightDrive.setPower(speed);
             frontrightDrive.setPower(speed);
             backleftDrive.setPower(speed);
-            backrightDrive.setPower(speed);
 
             frontleftDrive.setTargetPosition(flPos);
             frontrightDrive.setTargetPosition(frPos);
@@ -157,6 +162,18 @@ import com.qualcomm.robotcore.hardware.DcMotor;
                     || Math.abs(brPos - backrightDrive.getCurrentPosition()) > tol) {
                 try {
                     Thread.sleep(5);
+                    int flRel = Math.abs(frontleftDrive.getTargetPosition() - frontleftDrive.getCurrentPosition());
+                    int frRel = Math.abs(frontrightDrive.getTargetPosition() - frontrightDrive.getCurrentPosition());
+                    int blRel = Math.abs(backleftDrive.getTargetPosition() - backleftDrive.getCurrentPosition());
+                    int brRel = Math.abs(backrightDrive.getTargetPosition() - backrightDrive.getCurrentPosition());
+
+                    int avg = ((flRel+frRel+blRel+brRel)/4);
+
+                    frontleftDrive.setPower(speed*(1+.01*(flRel - avg)));
+                    frontrightDrive.setPower(speed*(1+.01*(frRel - avg)));
+                    backrightDrive.setPower(speed*(1+.01*(blRel - avg)));
+                    backleftDrive.setPower(speed*(1+.01*(brRel - avg)));
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -167,11 +184,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
         
         private void deliveryCounter(int howMuch, double speed) {
 
-            carouselDrive.getCurrentPosition();
-            carouselDrive.setTargetPosition((int) (howMuch * clicksPerInch));
+            carPos = carouselDrive.getCurrentPosition();
+            carPos += howMuch * clicksPerInch;
+
+            carouselDrive.setTargetPosition (carPos);
             carouselDrive.setPower(speed);
 
-            while (carouselDrive.getCurrentPosition() < howMuch * clicksPerInch ) {
+            while (Math.abs(carPos - carouselDrive.getCurrentPosition()) > tol) {
 
                 try {
                     Thread.sleep(5);
