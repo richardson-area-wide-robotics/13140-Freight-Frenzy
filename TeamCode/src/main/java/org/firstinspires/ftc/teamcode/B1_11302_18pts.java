@@ -81,15 +81,11 @@ public class B1_11302_18pts extends LinearOpMode {
 
         // Steps taken during autonomous
         // Distances in inches, angles in deg, speed
-        moveForward(-24, flex); // move backward: past carousel
-        strafeRPos(-36, prec); // move left: against wall
-        strafeRPos(-12,prec);
+        moveForward(-18, flex); // move backward: past carousel
+        strafeRPos(-30, prec); // move left: against wall
+        moveForward(3,flex);
+        strafeRPos(-3,prec);
         deliveryCar(34, comp); // deliver duck: make duck fall
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         strafeRPos(2, prec);
         moveForward(-16, flex); // move backward: into SU
         servoDrop(1, comp); // drop servo: preload drop
