@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 // Robot Location
 
-@Autonomous(name="Revised_Auton_Code_Base", group="Linear Opmode")
+@Autonomous(name="RedOne_11302_18pts", group="Linear Opmode")
 
-public class Revised_Auton_Code_Base extends LinearOpMode {
+public class RedOne_11302_18pts extends LinearOpMode {
 
     // Declare Devices
     DcMotor frontleftDrive = null;
@@ -67,16 +67,21 @@ public class Revised_Auton_Code_Base extends LinearOpMode {
 
         // Rotational Speeds
         final double prec = 0.2;
-        final double taut = 0.4;
+        // **final double taut = 0.4;
         final double flex = 0.7;
         final double comp = 1.0;
 
         waitForStart();
         // **Autonomous Steps** ( MoveF, StrafeR, RotCl, DelC, ServD )
-
-        // 1.
-        // 2.
-        // 3.
+        strafeR(16, prec);
+        moveF(12, flex);
+        strafeR(-2, prec);
+        moveF(2, prec);
+        delCou(12, comp);
+        strafeR(16, prec);
+        servD();
+        strafeR(-8, prec);
+        moveF(6,flex);
 
     }
 
