@@ -74,21 +74,25 @@ public class B1_11302_18pts extends LinearOpMode {
         final double comp = 1; // Complete motor speed
         final double flex = 0.7; // Flexible area to move in motor speed
         final double taut = 0.4; // Taut constraints on movement of motor speed
-        final double prec = 0.1; // Precise movements required for motor speed
+        final double prec = 0.2; // Precise movements required for motor speed
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         // Steps taken during autonomous
         // Distances in inches, angles in deg, speed
-        moveForward(-10, flex); // move backward: past carousel
-        strafeRPos(-12, taut); // move left: against wall
-        moveForward(3, prec); // move forward: slight adjustment
-        strafeRPos(-3,prec); // move left: slight adjustment
-        deliveryCar(12, comp); // deliver duck: make duck fall
-        moveForward(-6, flex); // move backward: into SU
+        moveForward(-24, flex); // move backward: past carousel
+        strafeRPos(-36, prec); // move left: against wall
+        strafeRPos(-12,prec);
+        deliveryCar(34, comp); // deliver duck: make duck fall
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        strafeRPos(2, prec);
+        moveForward(-16, flex); // move backward: into SU
         servoDrop(1, comp); // drop servo: preload drop
-        strafeRPos(4, prec); // move right: out of preload box's way
 
     }
 
@@ -223,10 +227,11 @@ public class B1_11302_18pts extends LinearOpMode {
     private void deliveryCar(int howMuch, double speed) {
 
         carouselDrive.getCurrentPosition();
-        carouselDrive.setTargetPosition((int) (howMuch * clicksPerInch));
         carouselDrive.setPower(speed);
+        carouselDrive.setTargetPosition((int) (howMuch * clicksPerInch));
 
-        while (carouselDrive.getCurrentPosition() < howMuch * clicksPerInch ) {
+
+        while (carouselDrive.getCurrentPosition() >= howMuch * clicksPerInch ) {
 
             try {
                 Thread.sleep(5);
@@ -242,7 +247,7 @@ public class B1_11302_18pts extends LinearOpMode {
         servoDrive.setPosition(-1);
 
         try {
-            Thread.sleep(2500);
+            Thread.sleep(1500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

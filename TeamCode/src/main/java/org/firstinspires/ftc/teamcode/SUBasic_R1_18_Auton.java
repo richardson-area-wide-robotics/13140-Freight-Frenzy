@@ -23,9 +23,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
         // operational constants
         private double maximum = 1; // Save for Carousel Mechanism
-        private double fast = 0.5; // Limit motor power to this value for Andymark RUN_USING_ENCODER mode
+        private double fast = 0.7; // Limit motor power to this value for Andymark RUN_USING_ENCODER mode
         private double medium = 0.3; // medium speed
-        private double slow = 0.1; // slow speed
+        private double slow = 0.2; // slow speed
         private double clicksPerInch = 57; // empirically measured
         private double tol = .1 * clicksPerInch; //encoder tolerance
         
@@ -74,13 +74,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
             // *****************Dead reckoning list*************
             // Distances in inches, angles in deg, speed 0.0 to 0.6
             strafeRPos(16, slow);
-            moveForward(20, medium);
-            strafeRPos(-4, slow);
+            moveForward(22, fast);
+            strafeRPos(-6, slow);
             deliveryCounter(-30, maximum);
             strafeRPos(8, slow);
-            servoDrop(1, medium);
-            strafeRPos(12, slow);
-            moveForward(6, medium);
+            servoDrop(1, maximum);
+            strafeRPos(14, slow);
+            moveForward(7, fast);
             
         }
 
@@ -199,11 +199,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
         private void servoDrop (int howMuch, double speed) {
             
-            servoDrive.setPosition(1);
-            servoDrive.setPosition(-1);
+           servoDrive.setPosition(-1);
 
             try {
-                Thread.sleep(2500);
+                Thread.sleep(1500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

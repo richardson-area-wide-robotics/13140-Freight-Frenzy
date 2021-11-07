@@ -74,15 +74,17 @@ public class R2_02300_10pts extends LinearOpMode {
         final double comp = 1; // Complete motor speed
         final double flex = 0.7; // Flexible area to move in motor speed
         final double taut = 0.4; // Taut constraints on movement of motor speed
-        final double prec = 0.1; // Precise movements required for motor speed
+        final double prec = 0.2; // Precise movements required for motor speed
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
         // Steps taken during autonomous
         // Distances in inches, angles in deg, speed
-        strafeRPos(16, flex); // move right: before long obstacle
-        moveForward(-18, comp); // move backward: against WH wall
+        strafeRPos(23, prec); // move right: before long obstacle
+        moveForward(-32, flex); // move backward: against WH wall
+        strafeRPos(23, prec);
+        moveForward(-14,flex);
 
     }
 

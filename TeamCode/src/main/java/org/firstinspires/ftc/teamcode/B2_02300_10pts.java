@@ -81,8 +81,10 @@ public class B2_02300_10pts extends LinearOpMode {
 
         // Steps taken during autonomous
         // Distances in inches, angles in deg, speed
-        strafeRPos(-16, flex); // move left: before long obstacle
-        moveForward(-18, comp); // move backward: against WH wall
+        strafeRPos(-35, prec); // move right: before long obstacle
+        moveForward(-50, flex); // move backward: against WH wall
+        strafeRPos(-23, prec);
+        moveForward(-14,flex);
 
     }
 
