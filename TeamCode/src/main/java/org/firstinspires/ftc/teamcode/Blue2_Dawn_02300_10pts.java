@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode;
-
+// NO Proportional
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -66,7 +66,7 @@ public class Blue2_Dawn_02300_10pts extends LinearOpMode {
         }
 
         // Rotational Speeds
-        final double prec = 0.2;
+        final double prec = 0.1;
         // **final double taut = 0.4;
         final double flex = 0.7;
         final double comp = 1.0;
@@ -74,7 +74,7 @@ public class Blue2_Dawn_02300_10pts extends LinearOpMode {
         waitForStart();
         // **Autonomous Steps** ( MoveF, StrafeR, RotCl, DelC, ServD )
 
-        strafeR(-24, prec);
+        strafeR(-30, prec);
         moveF(-32, comp);
         strafeR(-24, prec);
         moveF(-14, flex);
@@ -136,7 +136,7 @@ public class Blue2_Dawn_02300_10pts extends LinearOpMode {
         frontleftDrive.setPower(speed);
         backrightDrive.setPower(speed);
         frontrightDrive.setPower(speed);
-        backleftDrive.setPower(speed);
+        backleftDrive.setPower(speed*1.11);
 
         frontleftDrive.setTargetPosition(flPos);
         frontrightDrive.setTargetPosition(frPos);
@@ -150,19 +150,7 @@ public class Blue2_Dawn_02300_10pts extends LinearOpMode {
                 || Math.abs(brPos - backrightDrive.getCurrentPosition()) > tol) {
             try {
                 Thread.sleep(5);
-                int flRel = Math.abs(frontleftDrive.getTargetPosition() - frontleftDrive.getCurrentPosition());
-                int frRel = Math.abs(frontrightDrive.getTargetPosition() - frontrightDrive.getCurrentPosition());
-                int blRel = Math.abs(backleftDrive.getTargetPosition() - backleftDrive.getCurrentPosition());
-                int brRel = Math.abs(backrightDrive.getTargetPosition() - backrightDrive.getCurrentPosition());
-
-                int avg = ((flRel+frRel+blRel+brRel)/4);
-
-                frontleftDrive.setPower(speed*(1+.01*(flRel - avg)));
-                frontrightDrive.setPower(speed*(1+.01*(frRel - avg)));
-                backrightDrive.setPower(speed*(1+.01*(blRel - avg)));
-                backleftDrive.setPower(speed*(1+.01*(brRel - avg)));
-
-            } catch (InterruptedException e)
+                } catch (InterruptedException e)
             { e.printStackTrace(); }
 
         }
