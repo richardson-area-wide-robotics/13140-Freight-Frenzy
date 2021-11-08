@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 // Robot Location
 
-@Autonomous(name="BlueOne_11302_18pts", group="Linear Opmode")
+@Autonomous(name="B1_11302_18", group="Linear Opmode")
 
-public class BlueOne_11302_18pts extends LinearOpMode {
+public class B1_11302_18 extends LinearOpMode {
 
     // Declare Devices
     DcMotor frontleftDrive = null;
@@ -74,9 +74,19 @@ public class BlueOne_11302_18pts extends LinearOpMode {
         waitForStart();
         // **Autonomous Steps** ( MoveF, StrafeR, RotCl, DelC, ServD )
 
-        // 1.
-        // 2.
-        // 3.
+        moveF(-12, flex); // Present in: "B1_11302_18" "B1_12202_22" "? B1_12102_22"
+        strafeR(-20, prec);
+        moveF(3, taut);
+        delClk(12, comp); // Present in: All B1_1xxxx_xx Autons
+        strafeR(6, prec);
+        rotCl(-90, prec);
+        moveF(12, taut);
+        strafeR(-20, prec);
+        servD();
+        strafeR(12, prec);
+        // moveF(-20, flex);
+        // strafeR(-3, prec);
+        // servD();
 
     }
 
