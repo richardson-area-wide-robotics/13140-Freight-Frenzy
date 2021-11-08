@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 // Robot Location
 
-@Autonomous(name="RedOne_11302_18pts", group="Linear Opmode")
+@Autonomous(name="Red1_Dawn_11302_18pts", group="Linear Opmode")
 
-public class RedOne_11302_18pts extends LinearOpMode {
+public class Red1_Dawn_11302_18pts extends LinearOpMode {
 
     // Declare Devices
     DcMotor frontleftDrive = null;
