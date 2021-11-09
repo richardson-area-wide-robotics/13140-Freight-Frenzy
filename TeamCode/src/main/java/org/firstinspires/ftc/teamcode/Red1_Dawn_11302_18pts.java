@@ -141,7 +141,7 @@ public class Red1_Dawn_11302_18pts extends LinearOpMode {
         frontleftDrive.setPower(speed);
         backrightDrive.setPower(speed);
         frontrightDrive.setPower(speed);
-        backleftDrive.setPower(speed);
+        backleftDrive.setPower(speed*1.11);
 
         frontleftDrive.setTargetPosition(flPos);
         frontrightDrive.setTargetPosition(frPos);
@@ -155,18 +155,6 @@ public class Red1_Dawn_11302_18pts extends LinearOpMode {
                 || Math.abs(brPos - backrightDrive.getCurrentPosition()) > tol) {
             try {
                 Thread.sleep(5);
-                int flRel = Math.abs(frontleftDrive.getTargetPosition() - frontleftDrive.getCurrentPosition());
-                int frRel = Math.abs(frontrightDrive.getTargetPosition() - frontrightDrive.getCurrentPosition());
-                int blRel = Math.abs(backleftDrive.getTargetPosition() - backleftDrive.getCurrentPosition());
-                int brRel = Math.abs(backrightDrive.getTargetPosition() - backrightDrive.getCurrentPosition());
-
-                int avg = ((flRel+frRel+blRel+brRel)/4);
-
-                frontleftDrive.setPower(speed*(1+.01*(flRel - avg)));
-                frontrightDrive.setPower(speed*(1+.01*(frRel - avg)));
-                backrightDrive.setPower(speed*(1+.01*(blRel - avg)));
-                backleftDrive.setPower(speed*(1+.01*(brRel - avg)));
-
             } catch (InterruptedException e)
             { e.printStackTrace(); }
 

@@ -74,16 +74,13 @@ public class Blue1_Dawn_11302_18pts extends LinearOpMode {
         waitForStart();
         // **Autonomous Steps** ( MoveF, StrafeR, RotCl, DelC, ServD )
 
-        moveF(-12, flex); // Present in: "B1_11302_18" "B1_12202_22" "? B1_12102_22"
-        strafeR(-20, prec);
-        moveF(3, taut);
-        delClk(12, comp); // Present in: All B1_1xxxx_xx Autons
-        strafeR(6, prec);
-        rotCl(-90, prec);
-        moveF(12, taut);
-        strafeR(-20, prec);
+        moveF(-13, flex); // Present in: "B1_11302_18" "B1_12202_22" "? B1_12102_22"
+        strafeR(-30, prec);
+        delClk(30, comp); // Present in: All B1_1xxxx_xx Autons
+        moveF(-14, taut);
+        strafeR(-7, prec);
         servD();
-        strafeR(12, prec);
+        strafeR(-3,flex);
 
     }
 
@@ -134,16 +131,16 @@ public class Blue1_Dawn_11302_18pts extends LinearOpMode {
         brPos = backrightDrive.getCurrentPosition();
 
         // calculate new targets
-        flPos -= howMuch * clicksPerInch;
-        frPos += howMuch * clicksPerInch;
-        blPos += howMuch * clicksPerInch;
-        brPos -= howMuch * clicksPerInch;
+        flPos -= howMuch * clicksPerInch * .90;
+        frPos += howMuch * clicksPerInch * 1;
+        blPos += howMuch * clicksPerInch * 1.25;
+        brPos -= howMuch * clicksPerInch * 1;
 
         // move robot to new position
-        frontleftDrive.setPower(speed);
-        backrightDrive.setPower(speed);
-        frontrightDrive.setPower(speed);
-        backleftDrive.setPower(speed);
+        frontleftDrive.setPower(speed*1.05);
+        backrightDrive.setPower(speed*.9);
+        frontrightDrive.setPower(speed*.9);
+        backleftDrive.setPower(speed*1.2);
 
         frontleftDrive.setTargetPosition(flPos);
         frontrightDrive.setTargetPosition(frPos);
@@ -157,18 +154,6 @@ public class Blue1_Dawn_11302_18pts extends LinearOpMode {
                 || Math.abs(brPos - backrightDrive.getCurrentPosition()) > tol) {
             try {
                 Thread.sleep(5);
-                int flRel = Math.abs(frontleftDrive.getTargetPosition() - frontleftDrive.getCurrentPosition());
-                int frRel = Math.abs(frontrightDrive.getTargetPosition() - frontrightDrive.getCurrentPosition());
-                int blRel = Math.abs(backleftDrive.getTargetPosition() - backleftDrive.getCurrentPosition());
-                int brRel = Math.abs(backrightDrive.getTargetPosition() - backrightDrive.getCurrentPosition());
-
-                int avg = ((flRel+frRel+blRel+brRel)/4);
-
-                frontleftDrive.setPower(speed*(1+.01*(flRel - avg)));
-                frontrightDrive.setPower(speed*(1+.01*(frRel - avg)));
-                backrightDrive.setPower(speed*(1+.01*(blRel - avg)));
-                backleftDrive.setPower(speed*(1+.01*(brRel - avg)));
-
             } catch (InterruptedException e)
             { e.printStackTrace(); }
 

@@ -74,10 +74,9 @@ public class Red2_Dawn_02300_10pts extends LinearOpMode {
         waitForStart();
         // **Autonomous Steps** ( MoveF, StrafeR, RotCl, DelC, ServD )
 
-        strafeR(30, taut);
-        moveF(-32, comp);
-        strafeR(24, taut);
-        moveF(-14, flex);
+        strafeR(32, prec);
+        moveF(-50, comp);
+
     }
 
     private void moveF(int howMuch, double speed) {
