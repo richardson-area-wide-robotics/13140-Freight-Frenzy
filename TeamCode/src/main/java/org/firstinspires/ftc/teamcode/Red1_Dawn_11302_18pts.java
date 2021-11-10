@@ -73,15 +73,15 @@ public class Red1_Dawn_11302_18pts extends LinearOpMode {
 
         waitForStart();
         // **Autonomous Steps** ( MoveF, StrafeR, RotCl, DelC, ServD )
-        strafeR(16, prec);
-        moveF(12, flex);
-        strafeR(-2, prec);
-        moveF(2, prec);
-        delCou(12, comp);
-        strafeR(16, prec);
+        strafeR(15, prec);
+        moveF(26, flex);
+        strafeR(-3, prec);
+        moveF(3, prec);
+        delCou(30, comp);
+        strafeR(10, prec);
         servD();
-        strafeR(-8, prec);
-        moveF(6,flex);
+        strafeR(14, prec);
+        moveF(4,flex);
 
     }
 
@@ -132,16 +132,16 @@ public class Red1_Dawn_11302_18pts extends LinearOpMode {
         brPos = backrightDrive.getCurrentPosition();
 
         // calculate new targets
-        flPos -= howMuch * clicksPerInch;
-        frPos += howMuch * clicksPerInch;
-        blPos += howMuch * clicksPerInch;
-        brPos -= howMuch * clicksPerInch;
+        flPos -= howMuch * clicksPerInch * .90;
+        frPos += howMuch * clicksPerInch * 1;
+        blPos += howMuch * clicksPerInch * 1.25;
+        brPos -= howMuch * clicksPerInch * 1;
 
         // move robot to new position
-        frontleftDrive.setPower(speed);
-        backrightDrive.setPower(speed);
-        frontrightDrive.setPower(speed);
-        backleftDrive.setPower(speed*1.11);
+        frontleftDrive.setPower(speed*1.05);
+        backrightDrive.setPower(speed*.9);
+        frontrightDrive.setPower(speed*.9);
+        backleftDrive.setPower(speed*1.25);
 
         frontleftDrive.setTargetPosition(flPos);
         frontrightDrive.setTargetPosition(frPos);
@@ -217,7 +217,7 @@ public class Red1_Dawn_11302_18pts extends LinearOpMode {
     private void delCou(int howMuch, double speed) {
 
         carouselDrive.getCurrentPosition();
-        carouselDrive.setPower(speed);
+        carouselDrive.setPower(-speed);
         carouselDrive.setTargetPosition((int) (-howMuch * clicksPerInch));
 
 
