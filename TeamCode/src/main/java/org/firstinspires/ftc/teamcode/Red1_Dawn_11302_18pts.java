@@ -75,9 +75,9 @@ public class Red1_Dawn_11302_18pts extends LinearOpMode {
         // **Autonomous Steps** ( MoveF, StrafeR, RotCl, DelC, ServD )
         strafeR(15, prec);
         moveF(26, flex);
-        strafeR(-3, prec);
-        moveF(3, prec);
-        delCou(30, comp);
+        strafeR(-2, prec);
+        moveF(2, prec);
+        delCou(30, flex);
         strafeR(10, prec);
         servD();
         strafeR(14, prec);

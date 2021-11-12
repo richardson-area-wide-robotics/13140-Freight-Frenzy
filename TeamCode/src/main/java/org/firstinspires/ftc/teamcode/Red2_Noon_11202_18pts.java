@@ -79,7 +79,7 @@ public class Red2_Noon_11202_18pts extends LinearOpMode {
         moveF(69, comp);
         moveF(4, flex);
         strafeR(-71, prec);
-        delCou(30, comp);
+        delCou(30, 2/3);
         strafeR(10, flex);
         servD();
         strafeR(14, prec);

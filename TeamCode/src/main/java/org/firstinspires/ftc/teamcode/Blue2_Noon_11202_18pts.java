@@ -76,7 +76,7 @@ public class Blue2_Noon_11202_18pts extends LinearOpMode {
 
         moveF(-13, flex); // Present in: "B1_11302_18" "B1_12202_22" "? B1_12102_22"
         strafeR(-30, prec);
-        delClk(30, comp); // Present in: All B1_1xxxx_xx Autons
+        delClk(30, 2/3); // Present in: All B1_1xxxx_xx Autons
         moveF(-14, taut);
         strafeR(-7, prec);
         servD();
