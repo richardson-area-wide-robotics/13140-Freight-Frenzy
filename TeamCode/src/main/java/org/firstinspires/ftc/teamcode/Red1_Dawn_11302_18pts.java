@@ -73,14 +73,14 @@ public class Red1_Dawn_11302_18pts extends LinearOpMode {
 
         waitForStart();
         // **Autonomous Steps** ( MoveF, StrafeR, RotCl, DelC, ServD )
-        strafeR(15, prec);
+        strafeR(11, prec);
         moveF(26, flex);
-        strafeR(-2, prec);
+        strafeR(-3, prec);
         moveF(2, prec);
-        delCou(30, flex);
+        delClk(30, flex);
         strafeR(10, prec);
         servD();
-        strafeR(14, prec);
+        strafeR(12, prec);
         moveF(4,flex);
 
     }
@@ -111,10 +111,10 @@ public class Red1_Dawn_11302_18pts extends LinearOpMode {
         backrightDrive.setPower(speed);
 
 
-        while ( Math.abs(flPos - frontleftDrive.getCurrentPosition()) > tol
+        while (opModeIsActive() && Math.abs(flPos - frontleftDrive.getCurrentPosition()) > tol
                 || Math.abs(frPos - frontrightDrive.getCurrentPosition()) > tol
                 || Math.abs(blPos - backleftDrive.getCurrentPosition()) > tol
-                || Math.abs(brPos - backrightDrive.getCurrentPosition()) > tol) {
+                || Math.abs(brPos - backrightDrive.getCurrentPosition()) > tol ) {
 
             try { Thread.sleep(5); }
             catch (InterruptedException e)

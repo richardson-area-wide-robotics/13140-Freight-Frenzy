@@ -105,7 +105,7 @@ public class Blue2_Dawn_02300_10pts extends LinearOpMode {
         backrightDrive.setPower(speed);
 
 
-        while ( Math.abs(flPos - frontleftDrive.getCurrentPosition()) > tol
+        while (opModeIsActive() && Math.abs(flPos - frontleftDrive.getCurrentPosition()) > tol
                 || Math.abs(frPos - frontrightDrive.getCurrentPosition()) > tol
                 || Math.abs(blPos - backleftDrive.getCurrentPosition()) > tol
                 || Math.abs(brPos - backrightDrive.getCurrentPosition()) > tol) {
@@ -143,7 +143,7 @@ public class Blue2_Dawn_02300_10pts extends LinearOpMode {
         backrightDrive.setTargetPosition(brPos);
 
 
-        while ( Math.abs(flPos - frontleftDrive.getCurrentPosition()) > tol
+        while (opModeIsActive() && Math.abs(flPos - frontleftDrive.getCurrentPosition()) > tol
                 || Math.abs(frPos - frontrightDrive.getCurrentPosition()) > tol
                 || Math.abs(blPos - backleftDrive.getCurrentPosition()) > tol
                 || Math.abs(brPos - backrightDrive.getCurrentPosition()) > tol) {
@@ -183,7 +183,7 @@ public class Blue2_Dawn_02300_10pts extends LinearOpMode {
         backrightDrive.setPower(speed);
 
 
-        while (frontleftDrive.getCurrentPosition() < whatAngle * clicksPerDeg
+        while (opModeIsActive() && frontleftDrive.getCurrentPosition() < whatAngle * clicksPerDeg
                 || frontrightDrive.getCurrentPosition() < whatAngle * clicksPerDeg
                 || backleftDrive.getCurrentPosition() < whatAngle * clicksPerDeg
                 || backrightDrive.getCurrentPosition() < whatAngle * clicksPerDeg) {
@@ -200,7 +200,7 @@ public class Blue2_Dawn_02300_10pts extends LinearOpMode {
         carouselDrive.setPower(speed);
         carouselDrive.setTargetPosition((int) (howMuch * clicksPerInch));
 
-        while (carouselDrive.getCurrentPosition() <= howMuch * clicksPerInch ) {
+        while (opModeIsActive() && carouselDrive.getCurrentPosition() <= howMuch * clicksPerInch ) {
 
             try { Thread.sleep(5); }
             catch (InterruptedException e)
@@ -215,7 +215,7 @@ public class Blue2_Dawn_02300_10pts extends LinearOpMode {
         carouselDrive.setTargetPosition((int) (-howMuch * clicksPerInch));
 
 
-        while (carouselDrive.getCurrentPosition() >= -howMuch * clicksPerInch ) {
+        while (opModeIsActive() && carouselDrive.getCurrentPosition() >= -howMuch * clicksPerInch ) {
 
             try { Thread.sleep(5); }
             catch (InterruptedException e)

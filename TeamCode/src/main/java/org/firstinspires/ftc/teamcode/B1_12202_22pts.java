@@ -2,12 +2,13 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @Autonomous(name="B1_12202_22pts", group="Linear Opmode")  // @TeleOp(...) is the other common choice
-
+@Disabled
 // Start robot with front against wall & left side against tile
 
 public class B1_12202_22pts extends LinearOpMode {

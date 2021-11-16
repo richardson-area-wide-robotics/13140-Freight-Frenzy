@@ -76,11 +76,14 @@ public class Blue1_Dawn_11302_18pts extends LinearOpMode {
 
         moveF(-13, flex); // Present in: "B1_11302_18" "B1_12202_22" "? B1_12102_22"
         strafeR(-30, prec);
-        delClk(30, flex); // Present in: All B1_1xxxx_xx Autons
-        moveF(-14, taut);
-        strafeR(-7, prec);
+        moveF(7, flex);
+        delCou(30, flex); // Present in: All B1_1xxxx_xx Autons
+        moveF(-16, taut);
+        strafeR(-2, prec);
         servD();
-        strafeR(-3,flex);
+        strafeR(-4,flex);
+        moveF(-2, prec);
+        strafeR(-2, prec);
 
     }
 
@@ -110,7 +113,7 @@ public class Blue1_Dawn_11302_18pts extends LinearOpMode {
         backrightDrive.setPower(speed);
 
 
-        while ( Math.abs(flPos - frontleftDrive.getCurrentPosition()) > tol
+        while (opModeIsActive() && Math.abs(flPos - frontleftDrive.getCurrentPosition()) > tol
                 || Math.abs(frPos - frontrightDrive.getCurrentPosition()) > tol
                 || Math.abs(blPos - backleftDrive.getCurrentPosition()) > tol
                 || Math.abs(brPos - backrightDrive.getCurrentPosition()) > tol) {
@@ -148,7 +151,7 @@ public class Blue1_Dawn_11302_18pts extends LinearOpMode {
         backrightDrive.setTargetPosition(brPos);
 
 
-        while ( Math.abs(flPos - frontleftDrive.getCurrentPosition()) > tol
+        while (opModeIsActive() && Math.abs(flPos - frontleftDrive.getCurrentPosition()) > tol
                 || Math.abs(frPos - frontrightDrive.getCurrentPosition()) > tol
                 || Math.abs(blPos - backleftDrive.getCurrentPosition()) > tol
                 || Math.abs(brPos - backrightDrive.getCurrentPosition()) > tol) {
@@ -188,7 +191,7 @@ public class Blue1_Dawn_11302_18pts extends LinearOpMode {
         backrightDrive.setPower(speed);
 
 
-        while (frontleftDrive.getCurrentPosition() < whatAngle * clicksPerDeg
+        while (opModeIsActive() && frontleftDrive.getCurrentPosition() < whatAngle * clicksPerDeg
                 || frontrightDrive.getCurrentPosition() < whatAngle * clicksPerDeg
                 || backleftDrive.getCurrentPosition() < whatAngle * clicksPerDeg
                 || backrightDrive.getCurrentPosition() < whatAngle * clicksPerDeg) {
@@ -205,7 +208,7 @@ public class Blue1_Dawn_11302_18pts extends LinearOpMode {
         carouselDrive.setPower(speed);
         carouselDrive.setTargetPosition((int) (howMuch * clicksPerInch));
 
-        while (carouselDrive.getCurrentPosition() <= howMuch * clicksPerInch ) {
+        while (opModeIsActive() && carouselDrive.getCurrentPosition() <= howMuch * clicksPerInch ) {
 
             try { Thread.sleep(5); }
             catch (InterruptedException e)
@@ -220,7 +223,7 @@ public class Blue1_Dawn_11302_18pts extends LinearOpMode {
         carouselDrive.setTargetPosition((int) (-howMuch * clicksPerInch));
 
 
-        while (carouselDrive.getCurrentPosition() >= -howMuch * clicksPerInch ) {
+        while (opModeIsActive() && carouselDrive.getCurrentPosition() >= -howMuch * clicksPerInch ) {
 
             try { Thread.sleep(5); }
             catch (InterruptedException e)
