@@ -109,8 +109,8 @@ public class Autonomous_Base_Code_Gyro extends LinearOpMode {
 
         gyMoveF(10, prec);
         duckAcc(30, -1);
-        // 2.
-        // 3.
+        tiMoveF(3, taut);
+        tiStrafeR(3, flex, 1);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
@@ -131,9 +131,9 @@ public class Autonomous_Base_Code_Gyro extends LinearOpMode {
             int fracDuckGoal = (carouselDrive.getCurrentPosition() / duckGoal);
 
             carouselDrive.setTargetPosition(direction * duckGoal);
-            while ( Math.abs(carouselDrive.getCurrentPosition()) <= duckGoal){
+            while (Math.abs(carouselDrive.getCurrentPosition()) <= duckGoal) {
 
-                carouselDrive.setTargetPosition((int) (Math.min( start + (direction * fracDuckGoal * step), mach)));
+                carouselDrive.setTargetPosition((int) (Math.min(start + (direction * fracDuckGoal * step), mach)));
 
             }
 
@@ -248,98 +248,106 @@ public class Autonomous_Base_Code_Gyro extends LinearOpMode {
             frontrightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         }
+    }
 
-        private void strafeR ( int howMuch, double speed){
-            // howMuch is in inches. A negative howMuch moves backward.
+    private void strafeR(int howMuch, double speed) {
+        // howMuch is in inches. A negative howMuch moves backward.
 
-            // fetch motor positions
-            flPos = frontleftDrive.getCurrentPosition();
-            frPos = frontrightDrive.getCurrentPosition();
-            blPos = backleftDrive.getCurrentPosition();
-            brPos = backrightDrive.getCurrentPosition();
+        // fetch motor positions
+        flPos = frontleftDrive.getCurrentPosition();
+        frPos = frontrightDrive.getCurrentPosition();
+        blPos = backleftDrive.getCurrentPosition();
+        brPos = backrightDrive.getCurrentPosition();
 
-            // calculate new targets
-            flPos -= howMuch * clicksPerInch;
-            frPos += howMuch * clicksPerInch;
-            blPos += howMuch * clicksPerInch;
-            brPos -= howMuch * clicksPerInch;
+        // calculate new targets
+        flPos -= howMuch * clicksPerInch;
+        frPos += howMuch * clicksPerInch;
+        blPos += howMuch * clicksPerInch;
+        brPos -= howMuch * clicksPerInch;
 
-            // move robot to new position
-            frontleftDrive.setPower(speed);
-            backrightDrive.setPower(speed);
-            frontrightDrive.setPower(speed);
-            backleftDrive.setPower(speed);
+        // move robot to new position
+        frontleftDrive.setPower(speed);
+        backrightDrive.setPower(speed);
+        frontrightDrive.setPower(speed);
+        backleftDrive.setPower(speed);
 
-            frontleftDrive.setTargetPosition(flPos);
-            frontrightDrive.setTargetPosition(frPos);
-            backleftDrive.setTargetPosition(blPos);
-            backrightDrive.setTargetPosition(brPos);
+        frontleftDrive.setTargetPosition(flPos);
+        frontrightDrive.setTargetPosition(frPos);
+        backleftDrive.setTargetPosition(blPos);
+        backrightDrive.setTargetPosition(brPos);
 
 
-            while (Math.abs(flPos - frontleftDrive.getCurrentPosition()) > tol
-                    || Math.abs(frPos - frontrightDrive.getCurrentPosition()) > tol
-                    || Math.abs(blPos - backleftDrive.getCurrentPosition()) > tol
-                    || Math.abs(brPos - backrightDrive.getCurrentPosition()) > tol) {
-                try {
-                    Thread.sleep(5);
-                    int flRel = Math.abs(frontleftDrive.getTargetPosition() - frontleftDrive.getCurrentPosition());
-                    int frRel = Math.abs(frontrightDrive.getTargetPosition() - frontrightDrive.getCurrentPosition());
-                    int blRel = Math.abs(backleftDrive.getTargetPosition() - backleftDrive.getCurrentPosition());
-                    int brRel = Math.abs(backrightDrive.getTargetPosition() - backrightDrive.getCurrentPosition());
+        while (Math.abs(flPos - frontleftDrive.getCurrentPosition()) > tol
+                || Math.abs(frPos - frontrightDrive.getCurrentPosition()) > tol
+                || Math.abs(blPos - backleftDrive.getCurrentPosition()) > tol
+                || Math.abs(brPos - backrightDrive.getCurrentPosition()) > tol) {
+            try {
+                Thread.sleep(5);
+                int flRel = Math.abs(frontleftDrive.getTargetPosition() - frontleftDrive.getCurrentPosition());
+                int frRel = Math.abs(frontrightDrive.getTargetPosition() - frontrightDrive.getCurrentPosition());
+                int blRel = Math.abs(backleftDrive.getTargetPosition() - backleftDrive.getCurrentPosition());
+                int brRel = Math.abs(backrightDrive.getTargetPosition() - backrightDrive.getCurrentPosition());
 
-                    int avg = ((flRel + frRel + blRel + brRel) / 4);
+                int avg = ((flRel + frRel + blRel + brRel) / 4);
 
-                    frontleftDrive.setPower(speed * (1 + .01 * (flRel - avg)));
-                    frontrightDrive.setPower(speed * (1 + .01 * (frRel - avg)));
-                    backrightDrive.setPower(speed * (1 + .01 * (blRel - avg)));
-                    backleftDrive.setPower(speed * (1 + .01 * (brRel - avg)));
+                frontleftDrive.setPower(speed * (1 + .01 * (flRel - avg)));
+                frontrightDrive.setPower(speed * (1 + .01 * (frRel - avg)));
+                backrightDrive.setPower(speed * (1 + .01 * (blRel - avg)));
+                backleftDrive.setPower(speed * (1 + .01 * (brRel - avg)));
 
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
+        }
+    }
+
+    private void outTake(int howLong, double speed) {
+
+        // armIntakeDrive.setPower(speed);
+
+        while (opModeIsActive() && (getRuntime() < howLong)) {
+
+            try {
+                Thread.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    private void tiMoveF(int howLong, double speed) {
+
+        frontleftDrive.setPower(speed);
+        frontrightDrive.setPower(speed);
+        backleftDrive.setPower(speed);
+        backrightDrive.setPower(speed);
+
+        while (opModeIsActive() && (getRuntime() < howLong)) {
+
+            try {
+                Thread.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
+    }
 
-        private void rotCl ( int whatAngle, double speed){
+    private void tiStrafeR ( int howLong, double speed, int direction ){
 
-            // whatAngle is in degrees. A negative whatAngle turns counterclockwise.
-            final double clicksPerDeg = 1.555556; // 560 clicks / 360 deg
+        frontleftDrive.setPower(direction * speed);
+        frontrightDrive.setPower(-direction * speed);
+        backleftDrive.setPower(direction * speed);
+        backrightDrive.setPower(-direction * speed);
 
-            // fetch motor positions
-            flPos = frontleftDrive.getCurrentPosition();
-            frPos = frontrightDrive.getCurrentPosition();
-            blPos = backleftDrive.getCurrentPosition();
-            brPos = backrightDrive.getCurrentPosition();
+        while (opModeIsActive() && (getRuntime() < howLong)) {
 
-            // calculate new targets
-            flPos += whatAngle * clicksPerDeg;
-            frPos -= whatAngle * clicksPerDeg;
-            brPos += whatAngle * clicksPerDeg;
-            brPos -= whatAngle * clicksPerDeg;
-
-            // move robot to new position
-            frontleftDrive.setTargetPosition(flPos);
-            frontrightDrive.setTargetPosition(frPos);
-            backleftDrive.setTargetPosition(brPos);
-            backrightDrive.setTargetPosition(brPos);
-            frontleftDrive.setPower(speed);
-            frontrightDrive.setPower(speed);
-            backleftDrive.setPower(speed);
-            backrightDrive.setPower(speed);
-
-
-            while (frontleftDrive.getCurrentPosition() < whatAngle * clicksPerDeg
-                    || frontrightDrive.getCurrentPosition() < whatAngle * clicksPerDeg
-                    || backleftDrive.getCurrentPosition() < whatAngle * clicksPerDeg
-                    || backrightDrive.getCurrentPosition() < whatAngle * clicksPerDeg) {
-
-                try {
-                    Thread.sleep(5);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            try {
+                Thread.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
                 }
             }
         }
     }
-}
