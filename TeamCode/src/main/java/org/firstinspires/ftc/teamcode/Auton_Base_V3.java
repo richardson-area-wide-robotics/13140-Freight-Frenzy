@@ -3,8 +3,10 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.Range;
 
 // Robot Location
 
@@ -18,13 +20,11 @@ public class Auton_Base_V3 extends LinearOpMode {
     DcMotor backleftDrive = null;
     DcMotor backrightDrive = null;
     DcMotor carouselDrive = null;
-    Servo servoDrive = null;
-
-    // drive motor position variables
-    private int flPos; private int frPos; private int blPos; private int brPos;
+    ModernRoboticsI2cGyro   gyro    = null;
 
     private final double clicksPerInch =  44.563384; // Empirically measured
     private final double tol = .1 * clicksPerInch; // Encoder tolerance
+    static final double sensitivity = .15; // Larger more responsive but less stable
 
     @Override
     public void runOpMode() {
@@ -37,7 +37,6 @@ public class Auton_Base_V3 extends LinearOpMode {
             backleftDrive = hardwareMap.dcMotor.get("backleftDrive");
             backrightDrive = hardwareMap.dcMotor.get("backrightDrive");
             carouselDrive = hardwareMap.dcMotor.get("carouselDrive");
-            servoDrive = hardwareMap.servo.get("servoDrive");
 
             // The right motors need reversing
             frontrightDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -46,12 +45,31 @@ public class Auton_Base_V3 extends LinearOpMode {
             backleftDrive.setDirection(DcMotor.Direction.FORWARD);
             carouselDrive.setDirection(DcMotor.Direction.FORWARD);
 
+            gyro = (ModernRoboticsI2cGyro)hardwareMap.gyroSensor.get("gyro");
+
             // Set the drive motor run modes:
             frontleftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             frontrightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             backleftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             backrightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             carouselDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            telemetry.update();
+
+            gyro.calibrate();
+
+            // make sure the gyro is calibrated before continuing
+            while (!isStopRequested() && gyro.isCalibrating())  {
+                sleep(50);
+                idle();
+            }
+
+            // Wait for the game to start (Display Gyro value), and reset gyro before we move..
+            while (!isStarted()) {
+                telemetry.update();
+            }
+
+            gyro.resetZAxisIntegrator();
 
             frontleftDrive.setTargetPosition(0);
             frontrightDrive.setTargetPosition(0);
@@ -77,109 +95,87 @@ public class Auton_Base_V3 extends LinearOpMode {
         // Task Blocks: ( barcode, carousel, fit, outtake )
         // Hybrid Block: ( liftStrafeR )
 
-        // 1.
+        gyDrive(12,taut,0,1);
+        carousel(22, .1, 1); // Positive Direction is Clockwise OR CounterClockwise
         // 2.
         // 3.
 
     }
 
-    private void moveF(int howMuch, double speed) {
-        // howMuch is in inches. A negative howMuch moves backward.
+    private double gyDrive(int howMuch, double power, double angle, double dir) {
+        // Variables
+        double max;
+        double FLspeed;
+        double FRspeed;
+        double BLspeed;
+        double BRspeed;
 
-        // fetch motor positions
-        flPos = frontleftDrive.getCurrentPosition();
-        frPos = frontrightDrive.getCurrentPosition();
-        blPos = backleftDrive.getCurrentPosition();
-        brPos = backrightDrive.getCurrentPosition();
+        double error = getError(angle);
+        double steer = getSteer(error, sensitivity);
 
-        // calculate new targets
-        flPos -= howMuch * clicksPerInch;
-        frPos -= howMuch * clicksPerInch;
-        blPos -= howMuch * clicksPerInch;
-        brPos -= howMuch * clicksPerInch;
+        // Motor Position Targets
+        double goalFL = (frontleftDrive.getCurrentPosition() + (howMuch*clicksPerInch));
+        double goalFR = (frontrightDrive.getCurrentPosition() + (howMuch*clicksPerInch));
+        double goalBL = (backleftDrive.getCurrentPosition() + (howMuch*clicksPerInch));
+        double goalBR = (backrightDrive.getCurrentPosition() + (howMuch*clicksPerInch));
 
-        // move robot to new position
-        frontleftDrive.setTargetPosition(flPos);
-        frontrightDrive.setTargetPosition(frPos);
-        backleftDrive.setTargetPosition(blPos);
-        backrightDrive.setTargetPosition(brPos);
-        frontleftDrive.setPower(speed);
-        frontrightDrive.setPower(speed);
-        backleftDrive.setPower(speed);
-        backrightDrive.setPower(speed);
+        // Set Targets
+        frontleftDrive.setTargetPosition((int) goalFL);
+        frontrightDrive.setTargetPosition((int) goalFR);
+        backleftDrive.setTargetPosition((int) goalBL);
+        backrightDrive.setTargetPosition((int) goalBR);
 
+        // Set Mode
+        frontleftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontrightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backleftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backrightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        while ( Math.abs(flPos - frontleftDrive.getCurrentPosition()) > tol
-                || Math.abs(frPos - frontrightDrive.getCurrentPosition()) > tol
-                || Math.abs(blPos - backleftDrive.getCurrentPosition()) > tol
-                || Math.abs(brPos - backrightDrive.getCurrentPosition()) > tol) {
+        // Begin Motion
+        while (opModeIsActive() && frontleftDrive.isBusy() && frontrightDrive.isBusy() && backleftDrive.isBusy() && backrightDrive.isBusy()){
 
-            try { Thread.sleep(5); }
-            catch (InterruptedException e)
-            { e.printStackTrace(); }
-        }
-    }
+            FLspeed = power - steer;
+            FRspeed = power + steer;
+            BLspeed = power - steer;
+            BRspeed = power + steer;
 
-    private void strafeR(int howMuch, double speed) {
-        // howMuch is in inches. A negative howMuch moves backward.
+            max = Math.max(Math.abs(FLspeed), Math.abs(FRspeed), Math.abs(BLspeed), Math.abs(BRspeed));
 
-        // fetch motor positions
-        flPos = frontleftDrive.getCurrentPosition();
-        frPos = frontrightDrive.getCurrentPosition();
-        blPos = backleftDrive.getCurrentPosition();
-        brPos = backrightDrive.getCurrentPosition();
+            if (max > 1.0) {
+                FLspeed /= max;
+                FRspeed /= max;
+                BLspeed /= max;
+                BRspeed /= max;
+            }
 
-        // calculate new targets
-        flPos -= howMuch * clicksPerInch;
-        frPos += howMuch * clicksPerInch;
-        blPos += howMuch * clicksPerInch;
-        brPos -= howMuch * clicksPerInch;
+            frontleftDrive.setPower(FLspeed);
+            frontrightDrive.setPower(FRspeed);
+            backleftDrive.setPower(BLspeed);
+            backrightDrive.setPower(BRspeed);
 
-        // move robot to new position
-        frontleftDrive.setPower(speed);
-        backrightDrive.setPower(speed);
-        frontrightDrive.setPower(speed);
-        backleftDrive.setPower(speed);
+            while ( opModeIsActive() && Math.abs(goalFL - frontleftDrive.getCurrentPosition()) > tol
+                    || Math.abs(goalFR - frontrightDrive.getCurrentPosition()) > tol
+                    || Math.abs(goalBL - backleftDrive.getCurrentPosition()) > tol
+                    || Math.abs(goalBR - backrightDrive.getCurrentPosition()) > tol) {
 
-        frontleftDrive.setTargetPosition(flPos);
-        frontrightDrive.setTargetPosition(frPos);
-        backleftDrive.setTargetPosition(blPos);
-        backrightDrive.setTargetPosition(brPos);
-
-
-        while ( Math.abs(flPos - frontleftDrive.getCurrentPosition()) > tol
-                || Math.abs(frPos - frontrightDrive.getCurrentPosition()) > tol
-                || Math.abs(blPos - backleftDrive.getCurrentPosition()) > tol
-                || Math.abs(brPos - backrightDrive.getCurrentPosition()) > tol) {
-            try {
-                Thread.sleep(5);
-                int flRel = Math.abs(frontleftDrive.getTargetPosition() - frontleftDrive.getCurrentPosition());
-                int frRel = Math.abs(frontrightDrive.getTargetPosition() - frontrightDrive.getCurrentPosition());
-                int blRel = Math.abs(backleftDrive.getTargetPosition() - backleftDrive.getCurrentPosition());
-                int brRel = Math.abs(backrightDrive.getTargetPosition() - backrightDrive.getCurrentPosition());
-
-                int avg = ((flRel+frRel+blRel+brRel)/4);
-
-                frontleftDrive.setPower(speed*(1+.01*(flRel - avg)));
-                frontrightDrive.setPower(speed*(1+.01*(frRel - avg)));
-                backrightDrive.setPower(speed*(1+.01*(blRel - avg)));
-                backleftDrive.setPower(speed*(1+.01*(brRel - avg)));
-
-            } catch (InterruptedException e)
-            { e.printStackTrace(); }
+                try { Thread.sleep(5); }
+                catch (InterruptedException e)
+                { e.printStackTrace(); }
 
         }
     }
 
 // gyDiagonal + tiDiagonal
 
+// barcode
+
     private void carousel(int howMuch, double step, double dir) {
 
         // Variables
         double duckGoal = howMuch*clicksPerInch + carouselDrive.getCurrentPosition();
         double fracDuckGoal = carouselDrive.getCurrentPosition() / duckGoal;
-        double start = .1;
-        double mach = .5;
+        double start = .1; // Initial Speed
+        double mach = .5; // Maximum Speed
 
         // Logic
         carouselDrive.setTargetPosition((int) (dir * Math.abs(duckGoal)));
@@ -194,44 +190,26 @@ public class Auton_Base_V3 extends LinearOpMode {
 
     }
 
-    private void delClk(int howMuch, double speed) {
+    // private void fit{}
+    // private void outtake {}
+    // private void liftStrafeR {}
 
-        carouselDrive.getCurrentPosition();
-        carouselDrive.setPower(speed);
-        carouselDrive.setTargetPosition((int) (howMuch * clicksPerInch));
 
-        while (carouselDrive.getCurrentPosition() <= howMuch * clicksPerInch ) {
+    // ** PUBLIC VOIDS **
 
-            try { Thread.sleep(5); }
-            catch (InterruptedException e)
-            { e.printStackTrace(); }
-        }
+    public double getError(double targetAngle) {
+
+        double robotError;
+
+        // calculate error in -179 to +180 range  (
+        robotError = targetAngle - gyro.getIntegratedZValue();
+        while (robotError > 180)  robotError -= 360;
+        while (robotError <= -180) robotError += 360;
+        return robotError;
     }
 
-    private void delCou(int howMuch, double speed) {
-
-        carouselDrive.getCurrentPosition();
-        carouselDrive.setPower(speed);
-        carouselDrive.setTargetPosition((int) (-howMuch * clicksPerInch));
-
-
-        while (carouselDrive.getCurrentPosition() >= -howMuch * clicksPerInch ) {
-
-            try { Thread.sleep(5); }
-            catch (InterruptedException e)
-            { e.printStackTrace(); }
-        }
+    public double getSteer(double error, double sensitivity) {
+        return Range.clip(error * sensitivity, -1, 1);
     }
 
-    private void servD() {
-
-        servoDrive.setPosition(-1);
-
-        try { Thread.sleep(1500); }
-        catch (InterruptedException e)
-        { e.printStackTrace(); }
-
-        servoDrive.setPosition(1);
-
-    }
 }
