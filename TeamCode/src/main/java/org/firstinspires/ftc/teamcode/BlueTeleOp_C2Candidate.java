@@ -34,7 +34,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp
-public class RedTeleOp_C2Candidate extends LinearOpMode {
+public class BlueTeleOp_C2Candidate extends LinearOpMode {
     @Override
     public void runOpMode() {
         // Declare Motors.
@@ -92,7 +92,7 @@ public class RedTeleOp_C2Candidate extends LinearOpMode {
                 DuckDrive.getCurrentPosition();
                 DuckDrive.getCurrentPosition();
                 DuckDrive.getCurrentPosition();
-                DuckDrive.setPower(1*Math.min(i + (Math.abs(DuckDrive.getCurrentPosition()) / 530) * r, m));
+                DuckDrive.setPower(-1*Math.min(i + (Math.abs(DuckDrive.getCurrentPosition()) / 530) * r, m));
 
                 while (opModeIsActive() && Math.abs(DuckDrive.getCurrentPosition()) < 530) {
 
