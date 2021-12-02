@@ -139,7 +139,7 @@ public class Auton_Base_V3 extends LinearOpMode {
             BLspeed = power - steer;
             BRspeed = power + steer;
 
-            max = Math.max(Math.max(Math.abs(FLspeed), Math.abs(FRspeed)), Math.max(Math.abs(BLspeed), Math.abs(BRspeed)));
+            max = Math.min(Math.min(Math.abs(FLspeed), Math.abs(FRspeed)), Math.min(Math.abs(BLspeed), Math.abs(BRspeed)));
 
             if (max > 1.0) {
                 FLspeed /= max;
