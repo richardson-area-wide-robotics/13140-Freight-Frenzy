@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.Range;
 
 // Robot Location
@@ -114,10 +113,10 @@ public class Auton_Base_V3 extends LinearOpMode {
         double steer = getSteer(error, sensitivity);
 
         // Motor Position Targets
-        double goalFL = (frontleftDrive.getCurrentPosition() + (howMuch*clicksPerInch));
-        double goalFR = (frontrightDrive.getCurrentPosition() + (howMuch*clicksPerInch));
-        double goalBL = (backleftDrive.getCurrentPosition() + (howMuch*clicksPerInch));
-        double goalBR = (backrightDrive.getCurrentPosition() + (howMuch*clicksPerInch));
+        double goalFL = (frontleftDrive.getCurrentPosition() + (howMuch * clicksPerInch));
+        double goalFR = (frontrightDrive.getCurrentPosition() + (howMuch * clicksPerInch));
+        double goalBL = (backleftDrive.getCurrentPosition() + (howMuch * clicksPerInch));
+        double goalBR = (backrightDrive.getCurrentPosition() + (howMuch * clicksPerInch));
 
         // Set Targets
         frontleftDrive.setTargetPosition((int) goalFL);
@@ -132,7 +131,7 @@ public class Auton_Base_V3 extends LinearOpMode {
         backrightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // Begin Motion
-        while (opModeIsActive() && frontleftDrive.isBusy() && frontrightDrive.isBusy() && backleftDrive.isBusy() && backrightDrive.isBusy()){
+        while (opModeIsActive() && frontleftDrive.isBusy() && frontrightDrive.isBusy() && backleftDrive.isBusy() && backrightDrive.isBusy()) {
 
             FLspeed = power - steer;
             FRspeed = power + steer;
@@ -153,15 +152,18 @@ public class Auton_Base_V3 extends LinearOpMode {
             backleftDrive.setPower(BLspeed);
             backrightDrive.setPower(BRspeed);
 
-            while ( opModeIsActive() && Math.abs(goalFL - frontleftDrive.getCurrentPosition()) > tol
+            while (opModeIsActive() && Math.abs(goalFL - frontleftDrive.getCurrentPosition()) > tol
                     || Math.abs(goalFR - frontrightDrive.getCurrentPosition()) > tol
                     || Math.abs(goalBL - backleftDrive.getCurrentPosition()) > tol
                     || Math.abs(goalBR - backrightDrive.getCurrentPosition()) > tol) {
 
-                try { Thread.sleep(5); }
-                catch (InterruptedException e)
-                { e.printStackTrace(); }
+                try {
+                    Thread.sleep(5);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
+            }
         }
     }
 
