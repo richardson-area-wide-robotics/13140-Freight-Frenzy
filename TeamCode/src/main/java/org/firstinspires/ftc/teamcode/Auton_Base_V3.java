@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 // Robot Location
@@ -19,9 +20,10 @@ public class Auton_Base_V3 extends LinearOpMode {
     DcMotor backleftDrive = null;
     DcMotor backrightDrive = null;
     DcMotor carouselDrive = null;
-    ModernRoboticsI2cGyro   gyro    = null;
+    ModernRoboticsI2cGyro gyro = null;
+    private ElapsedTime runtime = new ElapsedTime();
 
-    private final double clicksPerInch =  44.563384; // Empirically measured
+    private final double clicksPerInch = 44.563384; // Empirically measured
     private final double tol = .1 * clicksPerInch; // Encoder tolerance
     static final double sensitivity = .15; // Larger more responsive but less stable
 
@@ -44,7 +46,7 @@ public class Auton_Base_V3 extends LinearOpMode {
             backleftDrive.setDirection(DcMotor.Direction.FORWARD);
             carouselDrive.setDirection(DcMotor.Direction.FORWARD);
 
-            gyro = (ModernRoboticsI2cGyro)hardwareMap.gyroSensor.get("gyro");
+            gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
 
             // Set the drive motor run modes:
             frontleftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -58,7 +60,7 @@ public class Auton_Base_V3 extends LinearOpMode {
             gyro.calibrate();
 
             // make sure the gyro is calibrated before continuing
-            while (!isStopRequested() && gyro.isCalibrating())  {
+            while (!isStopRequested() && gyro.isCalibrating()) {
                 sleep(50);
                 idle();
             }
@@ -90,18 +92,17 @@ public class Auton_Base_V3 extends LinearOpMode {
         final double comp = 1.0;
 
         waitForStart();
-        // Position Blocks: ( gyMoveF, gyStrafeR, gyDiagonal, tiDiagonal )
+        // Position Blocks: ( gyDrive, tiDiagonal )
         // Task Blocks: ( barcode, carousel, fit, outtake )
-        // Hybrid Block: ( liftStrafeR )
 
-        gyDrive(12,taut,0,1);
-        carousel(22, .1, 1); // Positive Direction is Clockwise OR CounterClockwise
+        // Angle of 0 forward?
+        // Positive Direction is Clockwise OR CounterClockwise
         // 2.
         // 3.
 
     }
 
-    private double gyDrive(int howMuch, double power, double angle, double dir) {
+    private void gyDrive(int howMuch, double power, double angle, double dir) {
         // Variables
         double max;
         double FLspeed;
@@ -113,10 +114,10 @@ public class Auton_Base_V3 extends LinearOpMode {
         double steer = getSteer(error, sensitivity);
 
         // Motor Position Targets
-        double goalFL = (frontleftDrive.getCurrentPosition() + (howMuch * clicksPerInch));
-        double goalFR = (frontrightDrive.getCurrentPosition() + (howMuch * clicksPerInch));
-        double goalBL = (backleftDrive.getCurrentPosition() + (howMuch * clicksPerInch));
-        double goalBR = (backrightDrive.getCurrentPosition() + (howMuch * clicksPerInch));
+        double goalFL = (frontleftDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
+        double goalFR = (frontrightDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
+        double goalBL = (backleftDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
+        double goalBR = (backrightDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
 
         // Set Targets
         frontleftDrive.setTargetPosition((int) goalFL);
@@ -138,7 +139,7 @@ public class Auton_Base_V3 extends LinearOpMode {
             BLspeed = power - steer;
             BRspeed = power + steer;
 
-            max = Math.max(Math.abs(FLspeed), Math.abs(FRspeed), Math.abs(BLspeed), Math.abs(BRspeed));
+            max = Math.max(Math.max(Math.abs(FLspeed), Math.abs(FRspeed)), Math.max(Math.abs(BLspeed), Math.abs(BRspeed)));
 
             if (max > 1.0) {
                 FLspeed /= max;
@@ -152,24 +153,58 @@ public class Auton_Base_V3 extends LinearOpMode {
             backleftDrive.setPower(BLspeed);
             backrightDrive.setPower(BRspeed);
 
-            while (opModeIsActive() && Math.abs(goalFL - frontleftDrive.getCurrentPosition()) > tol
-                    || Math.abs(goalFR - frontrightDrive.getCurrentPosition()) > tol
-                    || Math.abs(goalBL - backleftDrive.getCurrentPosition()) > tol
-                    || Math.abs(goalBR - backrightDrive.getCurrentPosition()) > tol) {
+        }
 
-                try {
-                    Thread.sleep(5);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        while (opModeIsActive() && Math.abs(goalFL - frontleftDrive.getCurrentPosition()) > tol
+                || Math.abs(goalFR - frontrightDrive.getCurrentPosition()) > tol
+                || Math.abs(goalBL - backleftDrive.getCurrentPosition()) > tol
+                || Math.abs(goalBR - backrightDrive.getCurrentPosition()) > tol) {
 
+            try { Thread.sleep(5); }
+            catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
+
+        // Stop all motion;
+        frontleftDrive.setPower(0);
+        frontrightDrive.setPower(0);
+        backleftDrive.setPower(0);
+        backrightDrive.setPower(0);
+
+        // Turn off RUN_TO_POSITION
+        frontleftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontrightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backleftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backrightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
     }
 
-// gyDiagonal + tiDiagonal
+    private void tiDiagonal(int howLong, double power, double frontVSback, int left, int right) {
+        // Left or Right 0, other 1.
+        frontleftDrive.setPower(power * frontVSback * right);
+        frontrightDrive.setPower(power * frontVSback * left);
+        backleftDrive.setPower(power * frontVSback * left);
+        backrightDrive.setPower(power * frontVSback* right);
+        runtime.reset();
 
-// barcode
+        while (opModeIsActive() && (runtime.seconds() < howLong)) {
+
+            try { Thread.sleep(5); }
+            catch (InterruptedException e)
+            { e.printStackTrace(); }
+
+        }
+
+    }
+
+    private void barcode(){
+        // hardwareMap.get(webcam.class, "imagineSight");
+
+        // if(imagineSight)
+
+    }
+
 
     private void carousel(int howMuch, double step, double dir) {
 
@@ -194,7 +229,6 @@ public class Auton_Base_V3 extends LinearOpMode {
 
     // private void fit{}
     // private void outtake {}
-    // private void liftStrafeR {}
 
 
     // ** PUBLIC VOIDS **
