@@ -34,7 +34,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp
-public class BlueTeleOp_C2Candidate extends LinearOpMode {
+public class TeleOp_C2Candidate extends LinearOpMode {
     @Override
     public void runOpMode() {
         // Declare Motors.
@@ -42,14 +42,30 @@ public class BlueTeleOp_C2Candidate extends LinearOpMode {
         DcMotor FRDrive = hardwareMap.dcMotor.get("frontrightDrive");
         DcMotor BLDrive = hardwareMap.dcMotor.get("backleftDrive");
         DcMotor BRDrive = hardwareMap.dcMotor.get("backrightDrive");
-        DcMotor DuckDrive = hardwareMap.dcMotor.get("carouselDrive");
+
+        DcMotor RDuckDrive = hardwareMap.dcMotor.get("redcdrive");
+        DcMotor BDuckDrive = hardwareMap.dcMotor.get("bluecdrive");
+        DcMotor ArmPivot = hardwareMap.dcMotor.get("armpivot");
+        DcMotor InOutTake = hardwareMap.dcMotor.get("inouttake");
+
+        // Arm Stay up Logic
+        ArmPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        ArmPivot.setTargetPosition(0);
+        ArmPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        ArmPivot.setPower(1.0);
+        ArmPivot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         // Reverse Necessary Motors. (Right)
         FLDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         FRDrive.setDirection(DcMotorSimple.Direction.FORWARD);
         BLDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         BRDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-        DuckDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        RDuckDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        BDuckDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        ArmPivot.setDirection(DcMotorSimple.Direction.FORWARD);
+        InOutTake.setDirection(DcMotorSimple.Direction.FORWARD);
 
         // Wait for Match Start.
         waitForStart();
@@ -61,8 +77,8 @@ public class BlueTeleOp_C2Candidate extends LinearOpMode {
             // // //  Section #1: Movement // // //
 
             // Variable Assignments.
-            double x = gamepad1.left_stick_y / 2; // Strafing
-            double y = gamepad1.left_stick_y; // Forwards & Back
+            double x = gamepad1.left_stick_x/-2; // Strafing
+            double y = gamepad1.left_stick_y * 1; // Forwards & Back
             double rx = -gamepad1.right_stick_x; // Rotation
 
             // Input to Power Conversion.
@@ -78,23 +94,60 @@ public class BlueTeleOp_C2Candidate extends LinearOpMode {
             BLDrive.setPower(BLPower);
             BRDrive.setPower(BRPower);
 
-            // // // Section #2: Carousel // // //
+            // // // Section #2: Carousel
 
-            // Variable Assignments.
-            //double i = .1; // initial carousel speed
-            //double r = .1; // ramp up amount
-            //double m = .5; // maximum carousel speed
+            if (opModeIsActive() && gamepad1.dpad_down) {
+                double i = .05; // Initial
+                double m = .25; // Mach
+                double s = .1; // Step
+                double d = 1;
 
-            // Input to Output.
-            while ((opModeIsActive() && gamepad1.dpad_down || gamepad1.dpad_right)) {
+                resetStartTime();
+                RDuckDrive.setPower(d*(Math.min(i+(getRuntime()*s),m)));
 
-                DuckDrive.setPower(-.5);
+            } else if (opModeIsActive() && gamepad1.dpad_right) {
+                double i = .05; // Initial
+                double m = .25; // Mach
+                double s = .1; // Step
+                double d = -1;
 
-            }
+                resetStartTime();
+                BDuckDrive.setPower(d*(Math.min(i+(getRuntime()*s),m)));
+
+            } else { RDuckDrive.setPower(0); }
 
             // // // Section #3: Freight // // //
 
-            // To be worked on when arm is attached //
+            // Variable Assignments.
+            int armPosition = 0;
+
+            // Central Logic.
+            int[] armLevel = {0, 145, 309, 445, 240, 600, 800};
+
+            if(gamepad1.left_bumper) {
+                armPosition = armLevel[0];
+            } else if (gamepad1.cross) {
+                armPosition = armLevel[5];
+            } else if (gamepad1.circle) {
+                armPosition = armLevel[6];
+            } else if (gamepad1.square) {
+                armPosition = armLevel[4];
+            } else if (gamepad1.triangle) {
+                armPosition = armLevel[3];
+            } else if (gamepad1.dpad_left) {
+                armPosition = armLevel[1];
+            } else if (gamepad1.dpad_up) {
+                armPosition = armLevel[2];
+            }
+            ArmPivot.setTargetPosition(armPosition);
+
+            // Intake / Outtake Logic.
+            if(gamepad1.left_bumper) {
+                InOutTake.setPower(1);
+            } else if (gamepad1.right_bumper) {
+                InOutTake.setPower(-1);
+            } else { InOutTake.setPower(0); }
+
         }
     }
 }

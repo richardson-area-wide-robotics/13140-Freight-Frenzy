@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -15,11 +16,12 @@ import com.qualcomm.robotcore.util.Range;
 public class Auton_Base_V3 extends LinearOpMode {
 
     // Declare Devices
-    DcMotor frontleftDrive = null;
-    DcMotor frontrightDrive = null;
-    DcMotor backleftDrive = null;
-    DcMotor backrightDrive = null;
-    DcMotor carouselDrive = null;
+    DcMotor FLDrive = null;
+    DcMotor FRDrive = null;
+    DcMotor BLDrive = null;
+    DcMotor BRDrive = null;
+    DcMotor RDuckDrive = null;
+    DcMotor BDuckDrive = null;
     ModernRoboticsI2cGyro gyro = null;
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -33,27 +35,30 @@ public class Auton_Base_V3 extends LinearOpMode {
 
         // Initialize the hardware variables.
         {
-            frontleftDrive = hardwareMap.dcMotor.get("frontleftDrive");
-            frontrightDrive = hardwareMap.dcMotor.get("frontrightDrive");
-            backleftDrive = hardwareMap.dcMotor.get("backleftDrive");
-            backrightDrive = hardwareMap.dcMotor.get("backrightDrive");
-            carouselDrive = hardwareMap.dcMotor.get("carouselDrive");
+            FLDrive = hardwareMap.dcMotor.get("frontleftdrive");
+            FRDrive = hardwareMap.dcMotor.get("frontrightdrive");
+            BLDrive = hardwareMap.dcMotor.get("backleftdrive");
+            BRDrive = hardwareMap.dcMotor.get("backrightdrive");
+            RDuckDrive = hardwareMap.dcMotor.get("redcDrive");
+            BDuckDrive = hardwareMap.dcMotor.get("bluecDrive");
 
             // The right motors need reversing
-            frontrightDrive.setDirection(DcMotor.Direction.REVERSE);
-            frontleftDrive.setDirection(DcMotor.Direction.FORWARD);
-            backrightDrive.setDirection(DcMotor.Direction.REVERSE);
-            backleftDrive.setDirection(DcMotor.Direction.FORWARD);
-            carouselDrive.setDirection(DcMotor.Direction.FORWARD);
+            FRDrive.setDirection(DcMotor.Direction.REVERSE);
+            FLDrive.setDirection(DcMotor.Direction.FORWARD);
+            BRDrive.setDirection(DcMotor.Direction.REVERSE);
+            BLDrive.setDirection(DcMotor.Direction.FORWARD);
+            RDuckDrive.setDirection(DcMotor.Direction.FORWARD);
+            BDuckDrive.setDirection(DcMotorSimple.Direction.FORWARD);
 
             gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
 
             // Set the drive motor run modes:
-            frontleftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            frontrightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backleftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backrightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            carouselDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            FLDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            FRDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            BLDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            BRDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            RDuckDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            BDuckDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             telemetry.update();
 
@@ -72,17 +77,18 @@ public class Auton_Base_V3 extends LinearOpMode {
 
             gyro.resetZAxisIntegrator();
 
-            frontleftDrive.setTargetPosition(0);
-            frontrightDrive.setTargetPosition(0);
-            backleftDrive.setTargetPosition(0);
-            backrightDrive.setTargetPosition(0);
-            carouselDrive.setTargetPosition(0);
+            FLDrive.setTargetPosition(0);
+            FRDrive.setTargetPosition(0);
+            BLDrive.setTargetPosition(0);
+            BRDrive.setTargetPosition(0);
+            RDuckDrive.setTargetPosition(0);
+            BDuckDrive.setTargetPosition(0);
 
-            frontleftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            frontrightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            backleftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            backrightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            carouselDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            FLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            FRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            
         }
 
         // Rotational Speeds
@@ -114,25 +120,25 @@ public class Auton_Base_V3 extends LinearOpMode {
         double steer = getSteer(error, sensitivity);
 
         // Motor Position Targets
-        double goalFL = (frontleftDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
-        double goalFR = (frontrightDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
-        double goalBL = (backleftDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
-        double goalBR = (backrightDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
+        double goalFL = (FLDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
+        double goalFR = (FRDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
+        double goalBL = (BLDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
+        double goalBR = (BRDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
 
         // Set Targets
-        frontleftDrive.setTargetPosition((int) goalFL);
-        frontrightDrive.setTargetPosition((int) goalFR);
-        backleftDrive.setTargetPosition((int) goalBL);
-        backrightDrive.setTargetPosition((int) goalBR);
+        FLDrive.setTargetPosition((int) goalFL);
+        FRDrive.setTargetPosition((int) goalFR);
+        BLDrive.setTargetPosition((int) goalBL);
+        BRDrive.setTargetPosition((int) goalBR);
 
         // Set Mode
-        frontleftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontrightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backleftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backrightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // Begin Motion
-        while (opModeIsActive() && frontleftDrive.isBusy() && frontrightDrive.isBusy() && backleftDrive.isBusy() && backrightDrive.isBusy()) {
+        while (opModeIsActive() && FLDrive.isBusy() && FRDrive.isBusy() && BLDrive.isBusy() && BRDrive.isBusy()) {
 
             FLspeed = power - steer;
             FRspeed = power + steer;
@@ -148,17 +154,17 @@ public class Auton_Base_V3 extends LinearOpMode {
                 BRspeed /= max;
             }
 
-            frontleftDrive.setPower(FLspeed);
-            frontrightDrive.setPower(FRspeed);
-            backleftDrive.setPower(BLspeed);
-            backrightDrive.setPower(BRspeed);
+            FLDrive.setPower(FLspeed);
+            FRDrive.setPower(FRspeed);
+            BLDrive.setPower(BLspeed);
+            BRDrive.setPower(BRspeed);
 
         }
 
-        while (opModeIsActive() && Math.abs(goalFL - frontleftDrive.getCurrentPosition()) > tol
-                || Math.abs(goalFR - frontrightDrive.getCurrentPosition()) > tol
-                || Math.abs(goalBL - backleftDrive.getCurrentPosition()) > tol
-                || Math.abs(goalBR - backrightDrive.getCurrentPosition()) > tol) {
+        while (opModeIsActive() && Math.abs(goalFL - FLDrive.getCurrentPosition()) > tol
+                || Math.abs(goalFR - FRDrive.getCurrentPosition()) > tol
+                || Math.abs(goalBL - BLDrive.getCurrentPosition()) > tol
+                || Math.abs(goalBR - BRDrive.getCurrentPosition()) > tol) {
 
             try { Thread.sleep(5); }
             catch (InterruptedException e) {
@@ -167,25 +173,25 @@ public class Auton_Base_V3 extends LinearOpMode {
         }
 
         // Stop all motion;
-        frontleftDrive.setPower(0);
-        frontrightDrive.setPower(0);
-        backleftDrive.setPower(0);
-        backrightDrive.setPower(0);
+        FLDrive.setPower(0);
+        FRDrive.setPower(0);
+        BLDrive.setPower(0);
+        BRDrive.setPower(0);
 
         // Turn off RUN_TO_POSITION
-        frontleftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontrightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backleftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backrightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FLDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FRDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BLDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BRDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
     }
 
     private void tiDiagonal(int howLong, double power, double frontVSback, int left, int right) {
         // Left or Right 0, other 1.
-        frontleftDrive.setPower(power * frontVSback * right);
-        frontrightDrive.setPower(power * frontVSback * left);
-        backleftDrive.setPower(power * frontVSback * left);
-        backrightDrive.setPower(power * frontVSback* right);
+        FLDrive.setPower(power * frontVSback * right);
+        FRDrive.setPower(power * frontVSback * left);
+        BLDrive.setPower(power * frontVSback * left);
+        BRDrive.setPower(power * frontVSback* right);
         runtime.reset();
 
         while (opModeIsActive() && (runtime.seconds() < howLong)) {
@@ -209,16 +215,16 @@ public class Auton_Base_V3 extends LinearOpMode {
     private void carousel(int howMuch, double step, double dir) {
 
         // Variables
-        double duckGoal = howMuch*clicksPerInch + carouselDrive.getCurrentPosition();
-        double fracDuckGoal = carouselDrive.getCurrentPosition() / duckGoal;
+        double duckGoal = howMuch*clicksPerInch + RDuckDrive.getCurrentPosition();
+        double fracDuckGoal = RDuckDrive.getCurrentPosition() / duckGoal;
         double start = .1; // Initial Speed
         double mach = .5; // Maximum Speed
 
         // Logic
-        carouselDrive.setTargetPosition((int) (dir * Math.abs(duckGoal)));
-        carouselDrive.setPower((int) ( dir * Math.min(start + (fracDuckGoal*step),mach)));
+        RDuckDrive.setTargetPosition((int) (dir * Math.abs(duckGoal)));
+        RDuckDrive.setPower((int) ( dir * Math.min(start + (fracDuckGoal*step),mach)));
 
-        while (opModeIsActive() && Math.abs(carouselDrive.getCurrentPosition()) <= howMuch * clicksPerInch ) {
+        while (opModeIsActive() && Math.abs(RDuckDrive.getCurrentPosition()) <= howMuch * clicksPerInch ) {
 
             try { Thread.sleep(5); }
             catch (InterruptedException e)
