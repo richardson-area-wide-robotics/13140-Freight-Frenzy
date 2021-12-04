@@ -20,8 +20,12 @@ public class Auton_Base_V3 extends LinearOpMode {
     DcMotor FRDrive = null;
     DcMotor BLDrive = null;
     DcMotor BRDrive = null;
+
     DcMotor RDuckDrive = null;
     DcMotor BDuckDrive = null;
+    DcMotor ArmPivot = null;
+    DcMotor InOutTake = null;
+
     ModernRoboticsI2cGyro gyro = null;
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -39,16 +43,28 @@ public class Auton_Base_V3 extends LinearOpMode {
             FRDrive = hardwareMap.dcMotor.get("frontrightdrive");
             BLDrive = hardwareMap.dcMotor.get("backleftdrive");
             BRDrive = hardwareMap.dcMotor.get("backrightdrive");
+
             RDuckDrive = hardwareMap.dcMotor.get("redcDrive");
             BDuckDrive = hardwareMap.dcMotor.get("bluecDrive");
+            ArmPivot = hardwareMap.dcMotor.get("armpivot");
+            InOutTake = hardwareMap.dcMotor.get("inouttake");
+
+            ArmPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            ArmPivot.setTargetPosition(0);
+            ArmPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            ArmPivot.setPower(1.0);
+            ArmPivot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
             // The right motors need reversing
             FRDrive.setDirection(DcMotor.Direction.REVERSE);
             FLDrive.setDirection(DcMotor.Direction.FORWARD);
             BRDrive.setDirection(DcMotor.Direction.REVERSE);
             BLDrive.setDirection(DcMotor.Direction.FORWARD);
+
             RDuckDrive.setDirection(DcMotor.Direction.FORWARD);
-            BDuckDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+            BDuckDrive.setDirection(DcMotor.Direction.FORWARD);
+            ArmPivot.setDirection(DcMotor.Direction.FORWARD);
+            InOutTake.setDirection(DcMotor.Direction.FORWARD);
 
             gyro = (ModernRoboticsI2cGyro) hardwareMap.gyroSensor.get("gyro");
 
@@ -57,8 +73,11 @@ public class Auton_Base_V3 extends LinearOpMode {
             FRDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             BLDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             BRDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
             RDuckDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             BDuckDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            ArmPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            InOutTake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             telemetry.update();
 
@@ -81,14 +100,22 @@ public class Auton_Base_V3 extends LinearOpMode {
             FRDrive.setTargetPosition(0);
             BLDrive.setTargetPosition(0);
             BRDrive.setTargetPosition(0);
+
             RDuckDrive.setTargetPosition(0);
             BDuckDrive.setTargetPosition(0);
+            ArmPivot.setTargetPosition(0);
+            InOutTake.setTargetPosition(0);
 
             FLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             FRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             BLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             BRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            
+
+            RDuckDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BDuckDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            ArmPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            InOutTake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
         }
 
         // Rotational Speeds
@@ -101,11 +128,11 @@ public class Auton_Base_V3 extends LinearOpMode {
         // Position Blocks: ( gyDrive, tiDiagonal )
         // Task Blocks: ( barcode, carousel, fit, outtake )
 
-        // Angle of 0 forward?
-        // Positive Direction is Clockwise OR CounterClockwise
-        // 2.
-        // 3.
-
+        gyDrive(10,flex,0,1);
+        carousel(12,.1,1);
+        tiDiagonal(1,taut,1,1,0);
+        fit();
+        outtake();
     }
 
     private void gyDrive(int howMuch, double power, double angle, double dir) {
@@ -233,12 +260,25 @@ public class Auton_Base_V3 extends LinearOpMode {
 
     }
 
-    // private void fit{}
-    // private void outtake {}
+    private void fit() {
 
+        int[] armLevel = {0, 145, 309, 445, 240, 600, 800};
+        int armPosition = armLevel[0];
+        ArmPivot.setTargetPosition(armPosition);
+    }
+
+    private void outtake() {
+        resetStartTime();
+        InOutTake.setPower(1);
+
+        while (opModeIsActive() && runtime.seconds() < 3 ){
+            try { Thread.sleep(5); }
+            catch (InterruptedException e)
+            { e.printStackTrace(); }
+        }
+    }
 
     // ** PUBLIC VOIDS **
-
     public double getError(double targetAngle) {
 
         double robotError;
