@@ -107,7 +107,7 @@ public class Autonomous_Base_Code_Gyro extends LinearOpMode {
         waitForStart();
         // **Autonomous Steps** ( duckAcc, gyBarArmStrafeR, gyMoveF, gyStrafeR, outTake, returnArm, tiMoveF, tistrafeR )
 
-        gyMoveF(10, prec);
+        // gyMoveF(10, prec);
         duckAcc(30, -1);
         tiMoveF(3, taut);
         tiStrafeR(3, flex, 1);
@@ -139,7 +139,7 @@ public class Autonomous_Base_Code_Gyro extends LinearOpMode {
 
         }
     }
-
+/*
     private void gyMoveF(int howMuch, double speed) {
         // howMuch is in inches. A negative howMuch moves backward.
 
@@ -248,7 +248,7 @@ public class Autonomous_Base_Code_Gyro extends LinearOpMode {
             frontrightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         }
-    }
+    }*/
 
     private void strafeR(int howMuch, double speed) {
         // howMuch is in inches. A negative howMuch moves backward.

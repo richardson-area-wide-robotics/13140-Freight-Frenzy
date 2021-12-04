@@ -45,9 +45,9 @@ public class BlueTeleOp_C2Candidate extends LinearOpMode {
         DcMotor DuckDrive = hardwareMap.dcMotor.get("carouselDrive");
 
         // Reverse Necessary Motors. (Right)
-        FLDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-        FRDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-        BLDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        FLDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        FRDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        BLDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         BRDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         DuckDrive.setDirection(DcMotorSimple.Direction.FORWARD);
 
@@ -61,7 +61,7 @@ public class BlueTeleOp_C2Candidate extends LinearOpMode {
             // // //  Section #1: Movement // // //
 
             // Variable Assignments.
-            double x = gamepad1.left_stick_x / 2; // Strafing
+            double x = gamepad1.left_stick_y / 2; // Strafing
             double y = gamepad1.left_stick_y; // Forwards & Back
             double rx = -gamepad1.right_stick_x; // Rotation
 
@@ -81,28 +81,15 @@ public class BlueTeleOp_C2Candidate extends LinearOpMode {
             // // // Section #2: Carousel // // //
 
             // Variable Assignments.
-            double i = .1; // initial carousel speed
-            double r = .1; // ramp up amount
-            double m = .5; // maximum carousel speed
+            //double i = .1; // initial carousel speed
+            //double r = .1; // ramp up amount
+            //double m = .5; // maximum carousel speed
 
             // Input to Output.
             while ((opModeIsActive() && gamepad1.dpad_down || gamepad1.dpad_right)) {
 
-                DuckDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                DuckDrive.getCurrentPosition();
-                DuckDrive.getCurrentPosition();
-                DuckDrive.getCurrentPosition();
-                DuckDrive.setPower(-1*Math.min(i + (Math.abs(DuckDrive.getCurrentPosition()) / 530) * r, m));
+                DuckDrive.setPower(-.5);
 
-                while (opModeIsActive() && Math.abs(DuckDrive.getCurrentPosition()) < 530) {
-
-                    try {
-                        Thread.sleep(5);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                }
             }
 
             // // // Section #3: Freight // // //
