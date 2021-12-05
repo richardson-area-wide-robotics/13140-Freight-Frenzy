@@ -13,17 +13,19 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
+import java.util.List;
+
 // Robot Location
 
-@Autonomous(name="Autonomous_V4_Revised_Base", group="Linear Opmode")
+@Autonomous(name = "Autonomous_V4_Revised_Base", group = "Linear Opmode")
 public class Autonomous_V4_Revised_Base extends LinearOpMode {
 
     //setting up cam
     private static final String TFOD_MODEL_ASSET = "FreightFrenzy_BCDM.tflite";
-    private static final String[] LABELS = {"Ball", "Cube", "Duck","Marker"};
+    private static final String[] LABELS = {"Ball", "Cube", "Duck", "Marker"};
 
     private static final String VUFORIA_KEY =
-         "AYEYxIH/////AAABmVWDEqQv0EXyrybvY1Ci+xEFBepsYnECz7Ua39I5xNbwYAXBQw5iyriVO0+hLn1DGrU81PFuyFVy1/LhN4u/aAp24fKqHIn/oVTbtjWKoDw1IC/IDiCpYDLngQf0YwPRxcx1mfzjwxPFmE2phkDaPL+ebXJWJt1SiXWwNM9rEyd31/xvdfBFWuediDiGpN4+S9zjLUKhnoC5gXZ3zy1jXkiYKRcalP9avwId0Qz2B86nOaiHRWMEnaSn6Gnd6kw4LLwrn9IgdPDLFMPYfTmKOQozr0aX9+Yn+Jj+8JMjKTyvaSo+RYvgtnEzYqqnMKZdVneAt9M0zRErHRT3EbJXzm2/xqH58DZ+vD75+jmNmFBa";
+            "AYEYxIH/////AAABmVWDEqQv0EXyrybvY1Ci+xEFBepsYnECz7Ua39I5xNbwYAXBQw5iyriVO0+hLn1DGrU81PFuyFVy1/LhN4u/aAp24fKqHIn/oVTbtjWKoDw1IC/IDiCpYDLngQf0YwPRxcx1mfzjwxPFmE2phkDaPL+ebXJWJt1SiXWwNM9rEyd31/xvdfBFWuediDiGpN4+S9zjLUKhnoC5gXZ3zy1jXkiYKRcalP9avwId0Qz2B86nOaiHRWMEnaSn6Gnd6kw4LLwrn9IgdPDLFMPYfTmKOQozr0aX9+Yn+Jj+8JMjKTyvaSo+RYvgtnEzYqqnMKZdVneAt9M0zRErHRT3EbJXzm2/xqH58DZ+vD75+jmNmFBa";
 
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod;
@@ -54,9 +56,9 @@ public class Autonomous_V4_Revised_Base extends LinearOpMode {
         initTfod();
 
         if (tfod != null) {
-                    tfod.activate();
-                    tfod.setZoom(2.5, 16.0 / 9.0);
-
+            tfod.activate();
+            tfod.setZoom(2.5, 16.0 / 9.0);
+        }
         // Initialize the hardware variables.
 
         FLDrive = hardwareMap.dcMotor.get("frontleftdrive");
@@ -143,235 +145,242 @@ public class Autonomous_V4_Revised_Base extends LinearOpMode {
         final double flex = 0.7;
         final double comp = 1.0;
 
+
         waitForStart();
         // Position Blocks: ( gyDrive, tiDiagonal )
         // Task Blocks: ( barcode, carousel, fit, outtake )
-
         gyDrive(10, flex, 0, 1);
         carousel(12, .1, 1);
         tiDiagonal(1, taut, 1, 1, 0);
         fit();
         outtake();
-    }     }
+    }
 
-    private void gyDrive(int howMuch, double power, double angle, double dir) {
-        // Variables
-        double max;
-        double FLspeed;
-        double FRspeed;
-        double BLspeed;
-        double BRspeed;
 
-        double error = getError(angle);
-        double steer = getSteer(error, sensitivity);
+        private void gyDrive ( int howMuch, double power, double angle, double dir){
+                // Variables
+                double max;
+                double FLspeed;
+                double FRspeed;
+                double BLspeed;
+                double BRspeed;
 
-        // Motor Position Targets
-        double goalFL = (FLDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
-        double goalFR = (FRDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
-        double goalBL = (BLDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
-        double goalBR = (BRDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
+                double error = getError(angle);
+                double steer = getSteer(error, sensitivity);
 
-        // Set Targets
-        FLDrive.setTargetPosition((int) goalFL);
-        FRDrive.setTargetPosition((int) goalFR);
-        BLDrive.setTargetPosition((int) goalBL);
-        BRDrive.setTargetPosition((int) goalBR);
+                // Motor Position Targets
+                double goalFL = (FLDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
+                double goalFR = (FRDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
+                double goalBL = (BLDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
+                double goalBR = (BRDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
 
-        // Set Mode
-        FLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        FRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                // Set Targets
+                FLDrive.setTargetPosition((int) goalFL);
+                FRDrive.setTargetPosition((int) goalFR);
+                BLDrive.setTargetPosition((int) goalBL);
+                BRDrive.setTargetPosition((int) goalBR);
 
-        // Begin Motion
-        while (opModeIsActive() && FLDrive.isBusy() && FRDrive.isBusy() && BLDrive.isBusy() && BRDrive.isBusy()) {
+                // Set Mode
+                FLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                FRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                BLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                BRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            FLspeed = power - steer;
-            FRspeed = power + steer;
-            BLspeed = power - steer;
-            BRspeed = power + steer;
+                // Begin Motion
+                while (opModeIsActive() && FLDrive.isBusy() && FRDrive.isBusy() && BLDrive.isBusy() && BRDrive.isBusy()) {
 
-            max = Math.min(Math.min(Math.abs(FLspeed), Math.abs(FRspeed)), Math.min(Math.abs(BLspeed), Math.abs(BRspeed)));
+                    FLspeed = power - steer;
+                    FRspeed = power + steer;
+                    BLspeed = power - steer;
+                    BRspeed = power + steer;
 
-            if (max > 1.0) {
-                FLspeed /= max;
-                FRspeed /= max;
-                BLspeed /= max;
-                BRspeed /= max;
+                    max = Math.min(Math.min(Math.abs(FLspeed), Math.abs(FRspeed)), Math.min(Math.abs(BLspeed), Math.abs(BRspeed)));
+
+                    if (max > 1.0) {
+                        FLspeed /= max;
+                        FRspeed /= max;
+                        BLspeed /= max;
+                        BRspeed /= max;
+                    }
+
+                    FLDrive.setPower(FLspeed);
+                    FRDrive.setPower(FRspeed);
+                    BLDrive.setPower(BLspeed);
+                    BRDrive.setPower(BRspeed);
+
+                }
+
+                // Encoder tolerance
+                double tol = .1 * clicksPerInch;
+                while (opModeIsActive() && Math.abs(goalFL - FLDrive.getCurrentPosition()) > tol
+                        || Math.abs(goalFR - FRDrive.getCurrentPosition()) > tol
+                        || Math.abs(goalBL - BLDrive.getCurrentPosition()) > tol
+                        || Math.abs(goalBR - BRDrive.getCurrentPosition()) > tol) {
+
+                    try {
+                        Thread.sleep(5);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                // Stop all motion;
+                FLDrive.setPower(0);
+                FRDrive.setPower(0);
+                BLDrive.setPower(0);
+                BRDrive.setPower(0);
+
+                // Turn off RUN_TO_POSITION
+                FLDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                FRDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                BLDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                BRDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
             }
 
-            FLDrive.setPower(FLspeed);
-            FRDrive.setPower(FRspeed);
-            BLDrive.setPower(BLspeed);
-            BRDrive.setPower(BRspeed);
+            private void tiDiagonal ( int howLong, double power, double frontVSback, int left,
+            int right)
+            {
+                // Left or Right 0, other 1.
+                FLDrive.setPower(power * frontVSback * right);
+                FRDrive.setPower(power * frontVSback * left);
+                BLDrive.setPower(power * frontVSback * left);
+                BRDrive.setPower(power * frontVSback * right);
+                runtime.reset();
 
-        }
+                while (opModeIsActive() && (runtime.seconds() < howLong)) {
 
-        // Encoder tolerance
-        double tol = .1 * clicksPerInch;
-        while (opModeIsActive() && Math.abs(goalFL - FLDrive.getCurrentPosition()) > tol
-                || Math.abs(goalFR - FRDrive.getCurrentPosition()) > tol
-                || Math.abs(goalBL - BLDrive.getCurrentPosition()) > tol
-                || Math.abs(goalBR - BRDrive.getCurrentPosition()) > tol) {
+                    try {
+                        Thread.sleep(5);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
-            try {
-                Thread.sleep(5);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+                }
 
-        // Stop all motion;
-        FLDrive.setPower(0);
-        FRDrive.setPower(0);
-        BLDrive.setPower(0);
-        BRDrive.setPower(0);
-
-        // Turn off RUN_TO_POSITION
-        FLDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        FRDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        BLDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        BRDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-    }
-
-    private void tiDiagonal(int howLong, double power, double frontVSback, int left, int right) {
-        // Left or Right 0, other 1.
-        FLDrive.setPower(power * frontVSback * right);
-        FRDrive.setPower(power * frontVSback * left);
-        BLDrive.setPower(power * frontVSback * left);
-        BRDrive.setPower(power * frontVSback * right);
-        runtime.reset();
-
-        while (opModeIsActive() && (runtime.seconds() < howLong)) {
-
-            try {
-                Thread.sleep(5);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
 
-        }
-
-    }
-
-    private void barcode() {}
-
-
-    private void carousel(int howMuch, double step, double dir) {
-
-        // Variables
-        double duckGoal = howMuch * clicksPerInch + RDuckDrive.getCurrentPosition();
-        double fracDuckGoal = RDuckDrive.getCurrentPosition() / duckGoal;
-        double start = .1; // Initial Speed
-        double mach = .5; // Maximum Speed
-
-        // Logic
-        RDuckDrive.setTargetPosition((int) (dir * Math.abs(duckGoal)));
-        RDuckDrive.setPower((int) (dir * Math.min(start + (fracDuckGoal * step), mach)));
-
-        while (opModeIsActive() && Math.abs(RDuckDrive.getCurrentPosition()) <= howMuch * clicksPerInch) {
-
-            try {
-                Thread.sleep(5);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            private void barcode () {
             }
-        }
 
-    }
 
-    private void fit() {
+            private void carousel ( int howMuch, double step, double dir){
 
-        int[] armLevel = {0, 145, 309, 445, 240, 600, 800};
-        int armPosition = armLevel[0];
-        ArmPivot.setTargetPosition(armPosition);
-    }
+                // Variables
+                double duckGoal = howMuch * clicksPerInch + RDuckDrive.getCurrentPosition();
+                double fracDuckGoal = RDuckDrive.getCurrentPosition() / duckGoal;
+                double start = .1; // Initial Speed
+                double mach = .5; // Maximum Speed
 
-    private void outtake() {
-        resetStartTime();
-        InOutTake.setPower(1);
+                // Logic
+                RDuckDrive.setTargetPosition((int) (dir * Math.abs(duckGoal)));
+                RDuckDrive.setPower((int) (dir * Math.min(start + (fracDuckGoal * step), mach)));
 
-        while (opModeIsActive() && runtime.seconds() < 3) {
-            try {
-                Thread.sleep(5);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                while (opModeIsActive() && Math.abs(RDuckDrive.getCurrentPosition()) <= howMuch * clicksPerInch) {
+
+                    try {
+                        Thread.sleep(5);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
             }
-        }
-    }
 
-    // ** PUBLIC VOIDS **
-    public double getError(double targetAngle) {
+            private void fit () {
 
-        double robotError;
+                int[] armLevel = {0, 145, 309, 445, 240, 600, 800};
+                int armPosition = armLevel[0];
+                ArmPivot.setTargetPosition(armPosition);
+            }
 
-        // calculate error in -179 to +180 range  (
-        robotError = targetAngle - gyro.getIntegratedZValue();
-        while (robotError > 180) robotError -= 360;
-        while (robotError <= -180) robotError += 360;
-        return robotError;
-    }
+            private void outtake () {
+                resetStartTime();
+                InOutTake.setPower(1);
 
-    public double getSteer(double error, double sensitivity) {
-        return Range.clip(error * sensitivity, -1, 1);
-    }
+                while (opModeIsActive() && runtime.seconds() < 3) {
+                    try {
+                        Thread.sleep(5);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
 
-    if(opModeIsActive()){
-    while (opModeIsActive()) {
-         if (tfod != null) {
-                            // getUpdatedRecognitions() will return null if no new information is available since
-                            // the last time that call was made.
-                            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                            if (updatedRecognitions != null) {
-                                telemetry.addData("# Object Detected", updatedRecognitions.size());
-                                // step through the list of recognitions and display boundary info.
-                                int i = 0;
-                                for (Recognition recognition : updatedRecognitions) {
-                                    telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                                    telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                            recognition.getLeft(), recognition.getTop());
-                                    telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                            recognition.getRight(), recognition.getBottom());
-                                    i++;
-                                }
-                                telemetry.update();
+            // ** PUBLIC VOIDS **
+            public double getError ( double targetAngle){
+
+                double robotError;
+
+                // calculate error in -179 to +180 range  (
+                robotError = targetAngle - gyro.getIntegratedZValue();
+                while (robotError > 180) robotError -= 360;
+                while (robotError <= -180) robotError += 360;
+                return robotError;
+            }
+
+            public double getSteer ( double error, double sensitivity){
+                return Range.clip(error * sensitivity, -1, 1);
+            }
+
+            if (opModeIsActive()) {
+                while (opModeIsActive()) {
+                    if (tfod != null) {
+                        // getUpdatedRecognitions() will return null if no new information is available since
+                        // the last time that call was made.
+                        List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                        if (updatedRecognitions != null) {
+                            telemetry.addData("# Object Detected", updatedRecognitions.size());
+                            // step through the list of recognitions and display boundary info.
+                            int i = 0;
+                            for (Recognition recognition : updatedRecognitions) {
+                                telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                                telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                        recognition.getLeft(), recognition.getTop());
+                                telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                                        recognition.getRight(), recognition.getBottom());
+                                i++;
                             }
+                            telemetry.update();
                         }
                     }
                 }
             }
-        }
 
-        private void initVuforia() {
 
-            /*
-             * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+            private void initVuforia () {
+
+                /*
+                 * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+                 */
+                VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+                parameters.vuforiaLicenseKey = VUFORIA_KEY;
+                parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+
+                //  Instantiate the Vuforia engine
+                vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+                // Loading trackables is not necessary for the TensorFlow Object Detection engine.
+            }
+
+            /**
+             * Initialize the TensorFlow Object Detection engine.
              */
-            VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
-            parameters.vuforiaLicenseKey = VUFORIA_KEY;
-            parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
-
-            //  Instantiate the Vuforia engine
-            vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
-            // Loading trackables is not necessary for the TensorFlow Object Detection engine.
+            private void initTfod () {
+                int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                        "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+                TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+                tfodParameters.minResultConfidence = 0.8f;
+                tfodParameters.isModelTensorFlow2 = true;
+                tfodParameters.inputSize = 320;
+                tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+                tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
+            }
         }
 
-        /**
-         * Initialize the TensorFlow Object Detection engine.
-         */
-        private void initTfod() {
-            int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                    "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-            TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-            tfodParameters.minResultConfidence = 0.8f;
-            tfodParameters.isModelTensorFlow2 = true;
-            tfodParameters.inputSize = 320;
-            tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-            tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
-        }
-    }
 
-}
+
+
+
+
