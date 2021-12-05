@@ -13,11 +13,20 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
-
 // Robot Location
 
-@Autonomous(name="Auton_Base_V3", group="Linear Opmode")
+@Autonomous(name="Autonomous_V4_Revised_Base", group="Linear Opmode")
 public class Autonomous_V4_Revised_Base extends LinearOpMode {
+
+    //setting up cam
+    private static final String TFOD_MODEL_ASSET = "FreightFrenzy_BCDM.tflite";
+    private static final String[] LABELS = {"Ball", "Cube", "Duck","Marker"};
+
+    private static final String VUFORIA_KEY =
+         "AYEYxIH/////AAABmVWDEqQv0EXyrybvY1Ci+xEFBepsYnECz7Ua39I5xNbwYAXBQw5iyriVO0+hLn1DGrU81PFuyFVy1/LhN4u/aAp24fKqHIn/oVTbtjWKoDw1IC/IDiCpYDLngQf0YwPRxcx1mfzjwxPFmE2phkDaPL+ebXJWJt1SiXWwNM9rEyd31/xvdfBFWuediDiGpN4+S9zjLUKhnoC5gXZ3zy1jXkiYKRcalP9avwId0Qz2B86nOaiHRWMEnaSn6Gnd6kw4LLwrn9IgdPDLFMPYfTmKOQozr0aX9+Yn+Jj+8JMjKTyvaSo+RYvgtnEzYqqnMKZdVneAt9M0zRErHRT3EbJXzm2/xqH58DZ+vD75+jmNmFBa";
+
+    private VuforiaLocalizer vuforia;
+    private TFObjectDetector tfod;
 
     // Declare Devices
     DcMotor FLDrive = null;
@@ -29,18 +38,24 @@ public class Autonomous_V4_Revised_Base extends LinearOpMode {
     DcMotor BDuckDrive = null;
     DcMotor ArmPivot = null;
     DcMotor InOutTake = null;
-    WebcamName ImagineSight;
-
+    WebcamName ImagineSight = null;
     ModernRoboticsI2cGyro gyro = null;
-    private ElapsedTime runtime = new ElapsedTime();
+
+    private final ElapsedTime runtime = new ElapsedTime();
 
     private final double clicksPerInch = 44.563384; // Empirically measured
-    private final double tol = .1 * clicksPerInch; // Encoder tolerance
     static final double sensitivity = .15; // Larger more responsive but less stable
 
     @Override
     public void runOpMode() {
         telemetry.setAutoClear(true);
+
+        initVuforia();
+        initTfod();
+
+        if (tfod != null) {
+                    tfod.activate();
+                    tfod.setZoom(2.5, 16.0 / 9.0);
 
         // Initialize the hardware variables.
 
@@ -137,7 +152,7 @@ public class Autonomous_V4_Revised_Base extends LinearOpMode {
         tiDiagonal(1, taut, 1, 1, 0);
         fit();
         outtake();
-    }
+    }     }
 
     private void gyDrive(int howMuch, double power, double angle, double dir) {
         // Variables
@@ -192,6 +207,8 @@ public class Autonomous_V4_Revised_Base extends LinearOpMode {
 
         }
 
+        // Encoder tolerance
+        double tol = .1 * clicksPerInch;
         while (opModeIsActive() && Math.abs(goalFL - FLDrive.getCurrentPosition()) > tol
                 || Math.abs(goalFR - FRDrive.getCurrentPosition()) > tol
                 || Math.abs(goalBL - BLDrive.getCurrentPosition()) > tol
@@ -238,13 +255,7 @@ public class Autonomous_V4_Revised_Base extends LinearOpMode {
 
     }
 
-    private void barcode() {
-        // hardwareMap.get(webcam.class, "imagineSight");
-
-        // if(imagineSight)
-
-
-    }
+    private void barcode() {}
 
 
     private void carousel(int howMuch, double step, double dir) {
@@ -305,4 +316,62 @@ public class Autonomous_V4_Revised_Base extends LinearOpMode {
     public double getSteer(double error, double sensitivity) {
         return Range.clip(error * sensitivity, -1, 1);
     }
+
+    if(opModeIsActive()){
+    while (opModeIsActive()) {
+         if (tfod != null) {
+                            // getUpdatedRecognitions() will return null if no new information is available since
+                            // the last time that call was made.
+                            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                            if (updatedRecognitions != null) {
+                                telemetry.addData("# Object Detected", updatedRecognitions.size());
+                                // step through the list of recognitions and display boundary info.
+                                int i = 0;
+                                for (Recognition recognition : updatedRecognitions) {
+                                    telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                                    telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                            recognition.getLeft(), recognition.getTop());
+                                    telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                                            recognition.getRight(), recognition.getBottom());
+                                    i++;
+                                }
+                                telemetry.update();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void initVuforia() {
+
+            /*
+             * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+             */
+            VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+            parameters.vuforiaLicenseKey = VUFORIA_KEY;
+            parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+
+            //  Instantiate the Vuforia engine
+            vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+            // Loading trackables is not necessary for the TensorFlow Object Detection engine.
+        }
+
+        /**
+         * Initialize the TensorFlow Object Detection engine.
+         */
+        private void initTfod() {
+            int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                    "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+            TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+            tfodParameters.minResultConfidence = 0.8f;
+            tfodParameters.isModelTensorFlow2 = true;
+            tfodParameters.inputSize = 320;
+            tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+            tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
+        }
+    }
+
 }

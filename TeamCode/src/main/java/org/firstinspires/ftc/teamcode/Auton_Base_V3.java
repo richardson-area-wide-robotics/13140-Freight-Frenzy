@@ -299,4 +299,5 @@ public class Auton_Base_V3 extends LinearOpMode {
     public double getSteer(double error, double sensitivity) {
         return Range.clip(error * sensitivity, -1, 1);
     }
+
 }
