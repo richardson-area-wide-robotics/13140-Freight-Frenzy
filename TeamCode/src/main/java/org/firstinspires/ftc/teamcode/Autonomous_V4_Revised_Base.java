@@ -1,18 +1,23 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+
+
 // Robot Location
 
 @Autonomous(name="Auton_Base_V3", group="Linear Opmode")
-public class Auton_Base_V3 extends LinearOpMode {
+public class Autonomous_V4_Revised_Base extends LinearOpMode {
 
     // Declare Devices
     DcMotor FLDrive = null;
@@ -24,6 +29,7 @@ public class Auton_Base_V3 extends LinearOpMode {
     DcMotor BDuckDrive = null;
     DcMotor ArmPivot = null;
     DcMotor InOutTake = null;
+    WebcamName ImagineSight;
 
     ModernRoboticsI2cGyro gyro = null;
     private ElapsedTime runtime = new ElapsedTime();
