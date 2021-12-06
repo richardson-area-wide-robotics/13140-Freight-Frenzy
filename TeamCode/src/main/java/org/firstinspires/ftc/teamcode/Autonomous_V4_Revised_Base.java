@@ -153,7 +153,65 @@ public class Autonomous_V4_Revised_Base extends LinearOpMode {
         tiDiagonal(1, taut, 1, 1, 0);
         fit();
         outtake();
+
+        if (opModeIsActive()) {
+            while (opModeIsActive()) {
+                if (tfod != null) {
+                    // getUpdatedRecognitions() will return null if no new information is available since
+                    // the last time that call was made.
+                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                    if (updatedRecognitions != null) {
+                        telemetry.addData("# Object Detected", updatedRecognitions.size());
+                        // step through the list of recognitions and display boundary info.
+                        int i = 0;
+                        for (Recognition recognition : updatedRecognitions) {
+                            telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                            telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                    recognition.getLeft(), recognition.getTop());
+                            telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                                    recognition.getRight(), recognition.getBottom());
+                            i++;
+                        }
+                        telemetry.update();
+                    }
+                }
+            }
+        }
     }
+
+
+        private void initVuforia () {
+
+            /*
+             * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+             */
+            VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+            parameters.vuforiaLicenseKey = VUFORIA_KEY;
+            parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+
+            //  Instantiate the Vuforia engine
+            vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+            // Loading trackables is not necessary for the TensorFlow Object Detection engine.
+        }
+
+        /**
+         * Initialize the TensorFlow Object Detection engine.
+         */
+        private void initTfod () {
+            int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                    "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+            TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+            tfodParameters.minResultConfidence = 0.8f;
+            tfodParameters.isModelTensorFlow2 = true;
+            tfodParameters.inputSize = 320;
+            tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+            tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
+        }
+
+
+
 
 
         private void gyDrive ( int howMuch, double power, double angle, double dir){
@@ -317,62 +375,8 @@ public class Autonomous_V4_Revised_Base extends LinearOpMode {
             public double getSteer ( double error, double sensitivity){
                 return Range.clip(error * sensitivity, -1, 1);
             }
+}
 
-            if (opModeIsActive()) {
-                while (opModeIsActive()) {
-                    if (tfod != null) {
-                        // getUpdatedRecognitions() will return null if no new information is available since
-                        // the last time that call was made.
-                        List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                        if (updatedRecognitions != null) {
-                            telemetry.addData("# Object Detected", updatedRecognitions.size());
-                            // step through the list of recognitions and display boundary info.
-                            int i = 0;
-                            for (Recognition recognition : updatedRecognitions) {
-                                telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                                telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                        recognition.getLeft(), recognition.getTop());
-                                telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                        recognition.getRight(), recognition.getBottom());
-                                i++;
-                            }
-                            telemetry.update();
-                        }
-                    }
-                }
-            }
-
-
-            private void initVuforia () {
-
-                /*
-                 * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-                 */
-                VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
-                parameters.vuforiaLicenseKey = VUFORIA_KEY;
-                parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
-
-                //  Instantiate the Vuforia engine
-                vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
-                // Loading trackables is not necessary for the TensorFlow Object Detection engine.
-            }
-
-            /**
-             * Initialize the TensorFlow Object Detection engine.
-             */
-            private void initTfod () {
-                int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                        "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-                TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-                tfodParameters.minResultConfidence = 0.8f;
-                tfodParameters.isModelTensorFlow2 = true;
-                tfodParameters.inputSize = 320;
-                tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-                tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
-            }
-        }
 
 
 
