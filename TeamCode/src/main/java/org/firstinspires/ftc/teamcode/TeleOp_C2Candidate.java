@@ -78,7 +78,7 @@ public class TeleOp_C2Candidate extends LinearOpMode {
 
             // Variable Assignments.
             double x = gamepad1.left_stick_x/-2; // Strafing
-            double y = gamepad1.left_stick_y * 1; // Forwards & Back
+            double y = gamepad1.left_stick_y; // Forwards & Back
             double rx = -gamepad1.right_stick_x; // Rotation
 
             // Input to Power Conversion.
@@ -123,6 +123,7 @@ public class TeleOp_C2Candidate extends LinearOpMode {
 
             // Central Logic.
             int[] armLevel = {0, 145, 309, 445, 240, 600, 800};
+            // Levels: Intake, AL1, AL2, AL3, ShH, AL3-Back, ShH-Back
 
             if(gamepad1.left_bumper) {
                 armPosition = armLevel[0];
