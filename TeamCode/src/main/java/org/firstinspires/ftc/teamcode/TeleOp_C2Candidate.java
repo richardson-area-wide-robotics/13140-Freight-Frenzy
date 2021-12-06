@@ -122,23 +122,19 @@ public class TeleOp_C2Candidate extends LinearOpMode {
             int armPosition = 0;
 
             // Central Logic.
-            int[] armLevel = {0, 145, 309, 445, 240, 600, 800};
-            // Levels: Intake, AL1, AL2, AL3, ShH, AL3-Back, ShH-Back
+            int[] armLevel = {0, 145, 309, 445, 240, 600, 800, 900};
+            // Levels: Intake, AL1, AL2, AL3, ShH, AL3-Back, ShH-Back High, ShH-Back Low
 
             if(gamepad1.left_bumper) {
                 armPosition = armLevel[0];
-            } else if (gamepad1.cross) {
-                armPosition = armLevel[5];
             } else if (gamepad1.circle) {
+                armPosition = armLevel[5];
+            } else if (gamepad1.cross) {
                 armPosition = armLevel[6];
             } else if (gamepad1.square) {
-                armPosition = armLevel[4];
+                armPosition = armLevel[7];
             } else if (gamepad1.triangle) {
-                armPosition = armLevel[3];
-            } else if (gamepad1.dpad_left) {
                 armPosition = armLevel[1];
-            } else if (gamepad1.dpad_up) {
-                armPosition = armLevel[2];
             }
             ArmPivot.setTargetPosition(armPosition);
 

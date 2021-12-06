@@ -154,6 +154,7 @@ public class Autonomous_V4_Revised_Base extends LinearOpMode {
         fit();
         outtake();
 
+
         if (opModeIsActive()) {
             while (opModeIsActive()) {
                 if (tfod != null) {
@@ -180,142 +181,142 @@ public class Autonomous_V4_Revised_Base extends LinearOpMode {
     }
 
 
-        private void initVuforia () {
 
-            /*
-             * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-             */
-            VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
-            parameters.vuforiaLicenseKey = VUFORIA_KEY;
-            parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+    private void initVuforia() {
 
-            //  Instantiate the Vuforia engine
-            vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
-            // Loading trackables is not necessary for the TensorFlow Object Detection engine.
-        }
-
-        /**
-         * Initialize the TensorFlow Object Detection engine.
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
          */
-        private void initTfod () {
-            int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                    "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-            TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-            tfodParameters.minResultConfidence = 0.8f;
-            tfodParameters.isModelTensorFlow2 = true;
-            tfodParameters.inputSize = 320;
-            tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-            tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        // Loading trackables is not necessary for the TensorFlow Object Detection engine.
+    }
+
+    /**
+     * Initialize the TensorFlow Object Detection engine.
+     */
+    private void initTfod() {
+        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfodParameters.minResultConfidence = 0.8f;
+        tfodParameters.isModelTensorFlow2 = true;
+        tfodParameters.inputSize = 320;
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
+    }
+
+
+    private void gyDrive(int howMuch, double power, double angle, double dir) {
+        // Variables
+        double max;
+        double FLspeed;
+        double FRspeed;
+        double BLspeed;
+        double BRspeed;
+
+        double error = getError(angle);
+        double steer = getSteer(error, sensitivity);
+
+        // Motor Position Targets
+        double goalFL = (FLDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
+        double goalFR = (FRDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
+        double goalBL = (BLDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
+        double goalBR = (BRDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
+
+        // Set Targets
+        FLDrive.setTargetPosition((int) goalFL);
+        FRDrive.setTargetPosition((int) goalFR);
+        BLDrive.setTargetPosition((int) goalBL);
+        BRDrive.setTargetPosition((int) goalBR);
+
+        // Set Mode
+        FLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        // Begin Motion
+        while (opModeIsActive() && FLDrive.isBusy() && FRDrive.isBusy() && BLDrive.isBusy() && BRDrive.isBusy()) {
+
+            FLspeed = power - steer;
+            FRspeed = power + steer;
+            BLspeed = power - steer;
+            BRspeed = power + steer;
+
+            max = Math.min(Math.min(Math.abs(FLspeed), Math.abs(FRspeed)), Math.min(Math.abs(BLspeed), Math.abs(BRspeed)));
+
+            if (max > 1.0) {
+                FLspeed /= max;
+                FRspeed /= max;
+                BLspeed /= max;
+                BRspeed /= max;
+            }
+
+            FLDrive.setPower(FLspeed);
+            FRDrive.setPower(FRspeed);
+            BLDrive.setPower(BLspeed);
+            BRDrive.setPower(BRspeed);
+
         }
 
+        // Encoder tolerance
+        double tol = .1 * clicksPerInch;
+        while (opModeIsActive() && Math.abs(goalFL - FLDrive.getCurrentPosition()) > tol
+                || Math.abs(goalFR - FRDrive.getCurrentPosition()) > tol
+                || Math.abs(goalBL - BLDrive.getCurrentPosition()) > tol
+                || Math.abs(goalBR - BRDrive.getCurrentPosition()) > tol) {
 
+            try {
+                Thread.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
+        // Stop all motion;
+        FLDrive.setPower(0);
+        FRDrive.setPower(0);
+        BLDrive.setPower(0);
+        BRDrive.setPower(0);
 
+        // Turn off RUN_TO_POSITION
+        FLDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FRDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BLDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BRDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        private void gyDrive ( int howMuch, double power, double angle, double dir){
-                // Variables
-                double max;
-                double FLspeed;
-                double FRspeed;
-                double BLspeed;
-                double BRspeed;
+    }
 
-                double error = getError(angle);
-                double steer = getSteer(error, sensitivity);
+    private void tiDiagonal(int howLong, double power, double frontVSback, int left,
+                            int right) {
+        // Left or Right 0, other 1.
+        FLDrive.setPower(power * frontVSback * right);
+        FRDrive.setPower(power * frontVSback * left);
+        BLDrive.setPower(power * frontVSback * left);
+        BRDrive.setPower(power * frontVSback * right);
+        runtime.reset();
 
-                // Motor Position Targets
-                double goalFL = (FLDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
-                double goalFR = (FRDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
-                double goalBL = (BLDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
-                double goalBR = (BRDrive.getCurrentPosition() + (howMuch * clicksPerInch * dir));
+        while (opModeIsActive() && (runtime.seconds() < howLong)) {
 
-                // Set Targets
-                FLDrive.setTargetPosition((int) goalFL);
-                FRDrive.setTargetPosition((int) goalFR);
-                BLDrive.setTargetPosition((int) goalBL);
-                BRDrive.setTargetPosition((int) goalBR);
-
-                // Set Mode
-                FLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                FRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                BLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                BRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                // Begin Motion
-                while (opModeIsActive() && FLDrive.isBusy() && FRDrive.isBusy() && BLDrive.isBusy() && BRDrive.isBusy()) {
-
-                    FLspeed = power - steer;
-                    FRspeed = power + steer;
-                    BLspeed = power - steer;
-                    BRspeed = power + steer;
-
-                    max = Math.min(Math.min(Math.abs(FLspeed), Math.abs(FRspeed)), Math.min(Math.abs(BLspeed), Math.abs(BRspeed)));
-
-                    if (max > 1.0) {
-                        FLspeed /= max;
-                        FRspeed /= max;
-                        BLspeed /= max;
-                        BRspeed /= max;
-                    }
-
-                    FLDrive.setPower(FLspeed);
-                    FRDrive.setPower(FRspeed);
-                    BLDrive.setPower(BLspeed);
-                    BRDrive.setPower(BRspeed);
-
-                }
-
-                // Encoder tolerance
-                double tol = .1 * clicksPerInch;
-                while (opModeIsActive() && Math.abs(goalFL - FLDrive.getCurrentPosition()) > tol
-                        || Math.abs(goalFR - FRDrive.getCurrentPosition()) > tol
-                        || Math.abs(goalBL - BLDrive.getCurrentPosition()) > tol
-                        || Math.abs(goalBR - BRDrive.getCurrentPosition()) > tol) {
-
-                    try {
-                        Thread.sleep(5);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                // Stop all motion;
-                FLDrive.setPower(0);
-                FRDrive.setPower(0);
-                BLDrive.setPower(0);
-                BRDrive.setPower(0);
-
-                // Turn off RUN_TO_POSITION
-                FLDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                FRDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                BLDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                BRDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+            try {
+                Thread.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
-            private void tiDiagonal ( int howLong, double power, double frontVSback, int left,
-            int right)
-            {
-                // Left or Right 0, other 1.
-                FLDrive.setPower(power * frontVSback * right);
-                FRDrive.setPower(power * frontVSback * left);
-                BLDrive.setPower(power * frontVSback * left);
-                BRDrive.setPower(power * frontVSback * right);
-                runtime.reset();
+        }
+    }
 
-                while (opModeIsActive() && (runtime.seconds() < howLong)) {
 
-                    try {
-                        Thread.sleep(5);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
 
-                }
-
-            }
 
             private void carousel ( int howMuch, double step, double dir){
 
