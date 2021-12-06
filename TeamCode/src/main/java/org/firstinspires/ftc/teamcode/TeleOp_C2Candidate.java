@@ -100,7 +100,7 @@ public class TeleOp_C2Candidate extends LinearOpMode {
                 double i = .05; // Initial
                 double m = .25; // Mach
                 double s = .1; // Step
-                double d = 1;
+                double d = 1; // Direction
 
                 resetStartTime();
                 RDuckDrive.setPower(d*(Math.min(i+(getRuntime()*s),m)));
