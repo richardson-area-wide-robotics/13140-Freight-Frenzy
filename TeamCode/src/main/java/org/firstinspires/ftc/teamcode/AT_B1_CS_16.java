@@ -313,16 +313,16 @@ public class AT_B1_CS_16 extends LinearOpMode {
     private void carousel ( int howMuch, double step, double dir){
 
         // Variables
-        double duckGoal = howMuch * clicksPerInch + RDuckDrive.getCurrentPosition();
-        double fracDuckGoal = RDuckDrive.getCurrentPosition() / duckGoal;
-        double start = .1; // Initial Speed
-        double mach = .4; // Maximum Speed
+        double duckGoal = howMuch * clicksPerInch + BDuckDrive.getCurrentPosition();
+        double fracDuckGoal = BDuckDrive.getCurrentPosition() / duckGoal;
+        double start = .05; // Initial Speed
+        double mach = .25; // Maximum Speed
 
         // Logic
-        RDuckDrive.setTargetPosition((int) (dir * Math.abs(duckGoal)));
-        RDuckDrive.setPower((int) (dir * Math.min(start + (fracDuckGoal * step), mach)));
+        BDuckDrive.setTargetPosition((int) (dir * Math.abs(duckGoal)));
+        BDuckDrive.setPower((int) (dir * Math.min(start + (fracDuckGoal * step), mach)));
 
-        while (opModeIsActive() && Math.abs(RDuckDrive.getCurrentPosition()) <= howMuch * clicksPerInch) {
+        while (opModeIsActive() && Math.abs(BDuckDrive.getCurrentPosition()) <= 500) {
 
             try { Thread.sleep(5); }
             catch (InterruptedException e)

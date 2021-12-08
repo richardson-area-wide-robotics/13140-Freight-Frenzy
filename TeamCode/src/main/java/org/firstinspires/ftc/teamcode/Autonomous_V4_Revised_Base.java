@@ -317,8 +317,8 @@ public class Autonomous_V4_Revised_Base extends LinearOpMode {
         // Variables
         double duckGoal = howMuch * clicksPerInch + RDuckDrive.getCurrentPosition();
         double fracDuckGoal = RDuckDrive.getCurrentPosition() / duckGoal;
-        double start = .1; // Initial Speed
-        double mach = .4; // Maximum Speed
+        double start = .05; // Initial Speed
+        double mach = .25; // Maximum Speed
 
         // Logic
         RDuckDrive.setTargetPosition((int) (dir * Math.abs(duckGoal)));

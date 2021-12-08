@@ -28,10 +28,6 @@
  */
 package org.firstinspires.ftc.teamcode;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -104,30 +100,49 @@ public class TeleOp_C2Candidate extends LinearOpMode {
             // // // Section #2: Carousel
 
             if (opModeIsActive() && gamepad1.dpad_down) {
+
                 double i = .05; // Initial
                 double m = .25; // Mach
-                double s = .1; // Step
+                double s = 10; // Step
 
-                resetStartTime();
-                RDuckDrive.setPower(.4);
-                //RDuckDrive.setPower(Math.min(i+(getRuntime()*s),m));
+                RDuckDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                int duckGoal = 500 + RDuckDrive.getCurrentPosition();
+                double fracDuckGoal = RDuckDrive.getCurrentPosition() / duckGoal;
+
+                RDuckDrive.setTargetPosition(Math.abs(duckGoal));
+                RDuckDrive.setPower(Math.min(i + (fracDuckGoal * s), m));
+
+                while (opModeIsActive() && Math.abs(RDuckDrive.getCurrentPosition()) <= 500 ) {
+
+                    try { Thread.sleep(5); }
+                    catch (InterruptedException e)
+                    { e.printStackTrace(); }
+                }
 
             } else if (opModeIsActive() && gamepad1.dpad_right) {
+
                 double i = .05; // Initial
                 double m = .25; // Mach
-                double s = .1; // Step
+                double s = 10; // Step
 
-                resetStartTime();
-                BDuckDrive.setPower(-.4);
-                //BDuckDrive.setPower(Math.min(i+(getRuntime()*s),m));
+                RDuckDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                int duckGoal = 500 + BDuckDrive.getCurrentPosition();
+                double fracDuckGoal = BDuckDrive.getCurrentPosition() / duckGoal;
+
+                BDuckDrive.setTargetPosition(Math.abs(duckGoal));
+                BDuckDrive.setPower(-Math.min(i + (fracDuckGoal * s), m));
+
+                while (opModeIsActive() && Math.abs(BDuckDrive.getCurrentPosition()) <= 500 ) {
+
+                    try { Thread.sleep(5); }
+                    catch (InterruptedException e)
+                    { e.printStackTrace(); }
+                }
 
             } else {
                 RDuckDrive.setPower(0);
-                BDuckDrive.setPower(0); }
-
-            // // // Section #2: Carousel Spinner // // //
-
-
+                BDuckDrive.setPower(0);
+            }
 
             // // // Section #3: Freight // // //
 

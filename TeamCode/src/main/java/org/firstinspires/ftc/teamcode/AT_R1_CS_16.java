@@ -315,14 +315,14 @@ public class AT_R1_CS_16 extends LinearOpMode {
         // Variables
         double duckGoal = howMuch * clicksPerInch + RDuckDrive.getCurrentPosition();
         double fracDuckGoal = RDuckDrive.getCurrentPosition() / duckGoal;
-        double start = .1; // Initial Speed
-        double mach = .4; // Maximum Speed
+        double start = .05; // Initial Speed
+        double mach = .25; // Maximum Speed
 
         // Logic
         RDuckDrive.setTargetPosition((int) (dir * Math.abs(duckGoal)));
         RDuckDrive.setPower((int) (dir * Math.min(start + (fracDuckGoal * step), mach)));
 
-        while (opModeIsActive() && Math.abs(RDuckDrive.getCurrentPosition()) <= howMuch * clicksPerInch) {
+        while (opModeIsActive() && Math.abs(RDuckDrive.getCurrentPosition()) <= 500) {
 
             try { Thread.sleep(5); }
             catch (InterruptedException e)
