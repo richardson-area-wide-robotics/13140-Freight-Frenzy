@@ -28,6 +28,10 @@
  */
 package org.firstinspires.ftc.teamcode;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -62,10 +66,12 @@ public class TeleOp_C2Candidate extends LinearOpMode {
         BLDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         BRDrive.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        RDuckDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-        BDuckDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-        ArmPivot.setDirection(DcMotorSimple.Direction.FORWARD);
-        InOutTake.setDirection(DcMotorSimple.Direction.FORWARD);
+        RDuckDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        BDuckDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        ArmPivot.setDirection(DcMotorSimple.Direction.REVERSE);
+        InOutTake.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        int armPosition = 0;
 
         // Wait for Match Start.
         waitForStart();
@@ -77,7 +83,7 @@ public class TeleOp_C2Candidate extends LinearOpMode {
             // // //  Section #1: Movement // // //
 
             // Variable Assignments.
-            double x = gamepad1.left_stick_x/-2; // Strafing
+            double x = gamepad1.left_stick_x/-1; // Strafing
             double y = gamepad1.left_stick_y; // Forwards & Back
             double rx = -gamepad1.right_stick_x; // Rotation
 
@@ -94,54 +100,61 @@ public class TeleOp_C2Candidate extends LinearOpMode {
             BLDrive.setPower(BLPower);
             BRDrive.setPower(BRPower);
 
+
             // // // Section #2: Carousel
 
             if (opModeIsActive() && gamepad1.dpad_down) {
                 double i = .05; // Initial
                 double m = .25; // Mach
                 double s = .1; // Step
-                double d = 1; // Direction
 
                 resetStartTime();
-                RDuckDrive.setPower(d*(Math.min(i+(getRuntime()*s),m)));
+                RDuckDrive.setPower(.4);
+                //RDuckDrive.setPower(Math.min(i+(getRuntime()*s),m));
 
             } else if (opModeIsActive() && gamepad1.dpad_right) {
                 double i = .05; // Initial
                 double m = .25; // Mach
                 double s = .1; // Step
-                double d = -1;
 
                 resetStartTime();
-                BDuckDrive.setPower(d*(Math.min(i+(getRuntime()*s),m)));
+                BDuckDrive.setPower(-.4);
+                //BDuckDrive.setPower(Math.min(i+(getRuntime()*s),m));
 
-            } else { RDuckDrive.setPower(0); }
+            } else {
+                RDuckDrive.setPower(0);
+                BDuckDrive.setPower(0); }
+
+            // // // Section #2: Carousel Spinner // // //
+
+
 
             // // // Section #3: Freight // // //
 
-            // Variable Assignments.
-            int armPosition = 0;
+            // Arm Pivot Encoder Levels
+            int[] armLevel = {
+                    0, 600, 800, 900, // 0: In, 1: AL3-Opp, 2: ShHub-High-Opp, 3: ShHub-Low-Opp
+                    145, 309, 445, // 4: AL1, 5: AL2, 6: AL3
+                    850, 750, 550 // 7: AL1-Opp, 8: AL2-Opp, 9: AL3-Opp
+            };
 
-            // Central Logic.
-            int[] armLevel = {0, 145, 309, 445, 240, 600, 800, 900};
-            // Levels: Intake, AL1, AL2, AL3, ShH, AL3-Back, ShH-Back High, ShH-Back Low
+            // Level Switch Logic
+            int l = 0;
 
-            if(gamepad1.left_bumper) {
-                armPosition = armLevel[0];
-            } else if (gamepad1.circle) {
-                armPosition = armLevel[5];
-            } else if (gamepad1.cross) {
-                armPosition = armLevel[6];
-            } else if (gamepad1.square) {
-                armPosition = armLevel[7];
-            } else if (gamepad1.triangle) {
-                armPosition = armLevel[1];
+            if(gamepad1.left_bumper){
+                l = -1; // ? DOWN
+            } else if(gamepad1.right_bumper){
+                l = 1; // ? UP
             }
+
+            armPosition = armLevel[Math.max(0,Math.min(3,(0+l)))]; // Max Pos: 3, Min Pos: 0
             ArmPivot.setTargetPosition(armPosition);
 
+
             // Intake / Outtake Logic.
-            if(gamepad1.left_bumper) {
+            if(gamepad1.left_trigger > .1) {
                 InOutTake.setPower(1);
-            } else if (gamepad1.right_bumper) {
+            } else if (gamepad1.right_trigger > .1) {
                 InOutTake.setPower(-1);
             } else { InOutTake.setPower(0); }
 

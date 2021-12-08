@@ -180,9 +180,6 @@ public class Autonomous_V4_Revised_Base extends LinearOpMode {
         }
     }
 
-
-
-
     private void initVuforia() {
 
         /*
@@ -315,67 +312,62 @@ public class Autonomous_V4_Revised_Base extends LinearOpMode {
         }
     }
 
+    private void carousel ( int howMuch, double step, double dir){
 
+        // Variables
+        double duckGoal = howMuch * clicksPerInch + RDuckDrive.getCurrentPosition();
+        double fracDuckGoal = RDuckDrive.getCurrentPosition() / duckGoal;
+        double start = .1; // Initial Speed
+        double mach = .4; // Maximum Speed
 
+        // Logic
+        RDuckDrive.setTargetPosition((int) (dir * Math.abs(duckGoal)));
+        RDuckDrive.setPower((int) (dir * Math.min(start + (fracDuckGoal * step), mach)));
 
-            private void carousel ( int howMuch, double step, double dir){
+        while (opModeIsActive() && Math.abs(RDuckDrive.getCurrentPosition()) <= howMuch * clicksPerInch) {
 
-                // Variables
-                double duckGoal = howMuch * clicksPerInch + RDuckDrive.getCurrentPosition();
-                double fracDuckGoal = RDuckDrive.getCurrentPosition() / duckGoal;
-                double start = .1; // Initial Speed
-                double mach = .5; // Maximum Speed
+            try { Thread.sleep(5); }
+            catch (InterruptedException e)
+            { e.printStackTrace(); }
+        }
 
-                // Logic
-                RDuckDrive.setTargetPosition((int) (dir * Math.abs(duckGoal)));
-                RDuckDrive.setPower((int) (dir * Math.min(start + (fracDuckGoal * step), mach)));
+    }
 
-                while (opModeIsActive() && Math.abs(RDuckDrive.getCurrentPosition()) <= howMuch * clicksPerInch) {
+    private void fit () {
 
-                    try {
-                        Thread.sleep(5);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+        int[] armLevel = {0, 145, 309, 445, 240, 600, 800};
+        int armPosition = armLevel[0];
+        ArmPivot.setTargetPosition(armPosition);
+    }
 
-            }
+    private void outtake () {
+        resetStartTime();
+        InOutTake.setPower(1);
 
-            private void fit () {
+        while (opModeIsActive() && runtime.seconds() < 3) {
+            try { Thread.sleep(5); }
+            catch (InterruptedException e)
+            { e.printStackTrace(); }
+        }
+    }
 
-                int[] armLevel = {0, 145, 309, 445, 240, 600, 800};
-                int armPosition = armLevel[0];
-                ArmPivot.setTargetPosition(armPosition);
-            }
+    // ** PUBLIC VOIDS **
+    public double getError ( double targetAngle){
 
-            private void outtake () {
-                resetStartTime();
-                InOutTake.setPower(1);
+        double robotError;
 
-                while (opModeIsActive() && runtime.seconds() < 3) {
-                    try {
-                        Thread.sleep(5);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+        // calculate error in -179 to +180 range  (
+        robotError = targetAngle - gyro.getIntegratedZValue();
+        while (robotError > 180) robotError -= 360;
+        while (robotError <= -180) robotError += 360;
+        return robotError;
+    }
 
-            // ** PUBLIC VOIDS **
-            public double getError ( double targetAngle){
+    public double getSteer ( double error, double sensitivity){
 
-                double robotError;
+        return Range.clip(error * sensitivity, -1, 1);
 
-                // calculate error in -179 to +180 range  (
-                robotError = targetAngle - gyro.getIntegratedZValue();
-                while (robotError > 180) robotError -= 360;
-                while (robotError <= -180) robotError += 360;
-                return robotError;
-            }
-
-            public double getSteer ( double error, double sensitivity){
-                return Range.clip(error * sensitivity, -1, 1);
-            }
+    }
 }
 
 
