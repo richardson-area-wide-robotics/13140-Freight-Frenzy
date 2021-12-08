@@ -156,14 +156,14 @@ public class TeleOp_C2Candidate extends LinearOpMode {
             // Level Switch Logic
 
             if(gamepad1.left_bumper){
-                1+= armLevel[0];
+                armLevel[0] += 1;
 
             } else if(gamepad1.right_bumper){
-
+                armLevel[0] +=1;
 
             }
 
-            armPosition = armLevel[Math.max(0,Math.min(3,(   )))]; // Max Pos: 3, Min Pos: 0
+            armPosition = armLevel[Math.max(0,Math.min 3; // Max Pos: 3, Min Pos: 0
             ArmPivot.setTargetPosition(armPosition);
 
 
