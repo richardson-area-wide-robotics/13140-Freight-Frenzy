@@ -335,7 +335,11 @@ public class Autonomous_V4_Revised_Base extends LinearOpMode {
 
     private void fit () {
 
-        int[] armLevel = {0, 145, 309, 445, 240, 600, 800};
+        int[] armLevel = {
+                0, 600, 800, 900, // 0: In, 1: AL3-Opp, 2: ShHub-High-Opp, 3: ShHub-Low-Opp
+                145, 309, 445, // 4: AL1, 5: AL2, 6: AL3
+                850, 750, 550 // 7: AL1-Opp, 8: AL2-Opp, 9: AL3-Opp
+        };
         int armPosition = armLevel[0];
         ArmPivot.setTargetPosition(armPosition);
     }
