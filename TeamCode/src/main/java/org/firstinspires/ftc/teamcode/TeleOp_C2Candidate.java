@@ -62,7 +62,7 @@ public class TeleOp_C2Candidate extends LinearOpMode {
         BLDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         BRDrive.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        RDuckDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        RDuckDrive.setDirection(DcMotorSimple.Direction.FORWARD);
         BDuckDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         ArmPivot.setDirection(DcMotorSimple.Direction.REVERSE);
         InOutTake.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -101,9 +101,9 @@ public class TeleOp_C2Candidate extends LinearOpMode {
 
             if (opModeIsActive() && gamepad1.dpad_down) {
 
-                double i = .05; // Initial
-                double m = .25; // Mach
-                double s = 10; // Step
+                double i = .1; // Initial
+                double m = .5; // Mach
+                double s = 100; // Step
 
                 RDuckDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 int duckGoal = 500 + RDuckDrive.getCurrentPosition();
@@ -121,11 +121,11 @@ public class TeleOp_C2Candidate extends LinearOpMode {
 
             } else if (opModeIsActive() && gamepad1.dpad_right) {
 
-                double i = .05; // Initial
-                double m = .25; // Mach
-                double s = 10; // Step
+                double i = .1; // Initial
+                double m = .5; // Mach
+                double s = 100; // Step
 
-                RDuckDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                BDuckDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 int duckGoal = 500 + BDuckDrive.getCurrentPosition();
                 double fracDuckGoal = BDuckDrive.getCurrentPosition() / duckGoal;
 
@@ -154,15 +154,16 @@ public class TeleOp_C2Candidate extends LinearOpMode {
             };
 
             // Level Switch Logic
-            int l = 0;
 
             if(gamepad1.left_bumper){
-                l = -1; // ? DOWN
+                1+= armLevel[0];
+
             } else if(gamepad1.right_bumper){
-                l = 1; // ? UP
+
+
             }
 
-            armPosition = armLevel[Math.max(0,Math.min(3,(0+l)))]; // Max Pos: 3, Min Pos: 0
+            armPosition = armLevel[Math.max(0,Math.min(3,(   )))]; // Max Pos: 3, Min Pos: 0
             ArmPivot.setTargetPosition(armPosition);
 
 
