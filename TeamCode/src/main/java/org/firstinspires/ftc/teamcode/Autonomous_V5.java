@@ -139,10 +139,10 @@ public class Autonomous_V5 extends LinearOpMode {
 
 
         // Rotational Speeds
-        final double prec = 0.2;
+        // final double prec = 0.2;
         final double taut = 0.4;
         final double flex = 0.7;
-        final double comp = 1.0;
+        // final double comp = 1.0;
 
         waitForStart();
         // Position Blocks: ( gyDrive, tiDiagonal )
@@ -188,7 +188,7 @@ public class Autonomous_V5 extends LinearOpMode {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "ImagineSight");
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
@@ -220,7 +220,7 @@ public class Autonomous_V5 extends LinearOpMode {
                     120, 190, 290 // 5: AL1-Fnt, 6: AL2-Fnt, 7: AL3-Fnt
             };
 
-            // int armPosition = armLevel[(4+webcam)];       // Only need Positions 0, 5, 6, & 7.
+            // // int armPosition = armLevel[(4+webcam)];       // Only need Positions 0, 5, 6, & 7.
             // ArmPivot.setTargetPosition(armPosition);
 
 
