@@ -67,7 +67,15 @@ public class TeleOp_C2Candidate extends LinearOpMode {
         ArmPivot.setDirection(DcMotorSimple.Direction.REVERSE);
         InOutTake.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        // Arm Variables.
         int armPosition = 0;
+
+        // Carousel Variables
+        double i = .25; // Initial
+        double ri = i; // RED
+        double bi = i; // BLUE
+        double s = .05; // Incremental Step in Power
+        double m = .40; // Maximum Power Value
 
         // Wait for Match Start.
         waitForStart();
@@ -99,71 +107,76 @@ public class TeleOp_C2Candidate extends LinearOpMode {
 
             // // // Section #2: Carousel
 
-            if (opModeIsActive() && gamepad1.dpad_down) {
+            if(opModeIsActive() && (gamepad1.share)) {
+                RDuckDrive.setPower(.5);
+                BDuckDrive.setPower(-.5);
+            } else {
+                RDuckDrive.setPower(0);
+                BDuckDrive.setPower(0);
+            }
 
-                double i = .1; // Initial
-                double m = .5; // Mach
-                double s = 100; // Step
+            if(opModeIsActive() && gamepad1.dpad_left) {
+                RDuckDrive.setPower(ri);
 
-                RDuckDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                int duckGoal = 500 + RDuckDrive.getCurrentPosition();
-                double fracDuckGoal = RDuckDrive.getCurrentPosition() / duckGoal;
-
-                RDuckDrive.setTargetPosition(Math.abs(duckGoal));
-                RDuckDrive.setPower(Math.min(i + (fracDuckGoal * s), m));
-
-                while (opModeIsActive() && Math.abs(RDuckDrive.getCurrentPosition()) <= 500 ) {
-
-                    try { Thread.sleep(5); }
-                    catch (InterruptedException e)
-                    { e.printStackTrace(); }
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
 
-            } else if (opModeIsActive() && gamepad1.dpad_right) {
-
-                double i = .1; // Initial
-                double m = .5; // Mach
-                double s = 100; // Step
-
-                BDuckDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                int duckGoal = 500 + BDuckDrive.getCurrentPosition();
-                double fracDuckGoal = BDuckDrive.getCurrentPosition() / duckGoal;
-
-                BDuckDrive.setTargetPosition(Math.abs(duckGoal));
-                BDuckDrive.setPower(-Math.min(i + (fracDuckGoal * s), m));
-
-                while (opModeIsActive() && Math.abs(BDuckDrive.getCurrentPosition()) <= 500 ) {
-
-                    try { Thread.sleep(5); }
-                    catch (InterruptedException e)
-                    { e.printStackTrace(); }
+                if(ri<m){
+                    ri+=s;
                 }
 
             } else {
                 RDuckDrive.setPower(0);
+                ri=i;
+            }
+
+            if(opModeIsActive() && gamepad1.dpad_right) {
+                BDuckDrive.setPower(bi);
+
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                if(bi<m){
+                    bi+=s;
+                }
+
+            } else {
                 BDuckDrive.setPower(0);
+                bi= i;
             }
 
             // // // Section #3: Freight // // //
 
             // Arm Pivot Encoder Levels
             int[] armLevel = {
-                    0, 600, 800, 900, // 0: In, 1: AL3-Opp, 2: ShHub-High-Opp, 3: ShHub-Low-Opp
-                    145, 309, 445, // 4: AL1, 5: AL2, 6: AL3
-                    850, 750, 550 // 7: AL1-Opp, 8: AL2-Opp, 9: AL3-Opp
+                    0, 40, 720, 790, 900, // 0: Start, 1: In, 2: AL3-Opp, 3: AL2-Opp, 4: AL1-Opp
+                    120, 190, 290 // 5: AL1-Fnt, 6: AL2-Fnt, 7: AL3-Fnt
             };
 
             // Level Switch Logic
 
-            if(gamepad1.left_bumper){
-                armLevel[0] += 1;
-
-            } else if(gamepad1.right_bumper){
-                armLevel[0] +=1;
-
+            if(gamepad1.left_trigger > .1){
+                armPosition = armLevel[1];
+            } else if(gamepad1.cross){
+                armPosition = armLevel[4];
+            } else if(gamepad1.circle){
+                armPosition = armLevel[3];
+            } else if(gamepad1.triangle){
+                armPosition = armLevel[2];
+            } else if(gamepad1.square){
+                armPosition = armLevel[6];
+            } else if(gamepad1.dpad_down){
+                armPosition = armLevel[5];
+            } else if(gamepad1.dpad_up){
+                armPosition = armLevel[7];
             }
 
-            armPosition = armLevel[Math.max(0,Math.min 3; // Max Pos: 3, Min Pos: 0
             ArmPivot.setTargetPosition(armPosition);
 
 
