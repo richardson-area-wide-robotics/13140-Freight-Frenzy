@@ -25,7 +25,7 @@ public class Autonomous_V4_Revised_Base extends LinearOpMode {
     private static final String[] LABELS = {"Ball", "Cube", "Duck", "Marker"};
 
     private static final String VUFORIA_KEY =
-            "AYEYxIH/////AAABmVWDEqQv0EXyrybvY1Ci+xEFBepsYnECz7Ua39I5xNbwYAXBQw5iyriVO0+hLn1DGrU81PFuyFVy1/LhN4u/aAp24fKqHIn/oVTbtjWKoDw1IC/IDiCpYDLngQf0YwPRxcx1mfzjwxPFmE2phkDaPL+ebXJWJt1SiXWwNM9rEyd31/xvdfBFWuediDiGpN4+S9zjLUKhnoC5gXZ3zy1jXkiYKRcalP9avwId0Qz2B86nOaiHRWMEnaSn6Gnd6kw4LLwrn9IgdPDLFMPYfTmKOQozr0aX9+Yn+Jj+8JMjKTyvaSo+RYvgtnEzYqqnMKZdVneAt9M0zRErHRT3EbJXzm2/xqH58DZ+vD75+jmNmFBa";
+            "AQzpt+D/////AAABmXUuuBKn4UoahBqtNpXN7lJd0jCcYmRl0QmG9GRYDc10Kkjzs6hWFRr31et7XcVTAs17Ndzq2XR3IojRdhnCcvepz1OQYwcH+4Dndj2NpU5Tcl/Rv6/eKbCanlPMmwo7dC73WqPWsMqs/g8q8FMVP7amLMBaoFcTDfgcdJTTzHhaG+coBFFIMIy7rf9SBu30bMy0sRMSCW5XPL99chwgwD8l+wGFQkrLRSP8J27neaL6rn9/F1a2zk17/k+N7+NMS+Wb+qUtvWn0iCNqrsxHASrZqKSloa12K1ZDI0v4pzHFzjOLh1Gd0gGuotmNQ0NhMoU/vDnEXf3Vr7/oCwQ7CYf6FLwKr+RozYf+cIxp70qp";
 
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod;
@@ -144,13 +144,13 @@ public class Autonomous_V4_Revised_Base extends LinearOpMode {
         final double flex = 0.7;
         final double comp = 1.0;
 
-
         waitForStart();
         // Position Blocks: ( gyDrive, tiDiagonal )
         // Task Blocks: ( barcode, carousel, fit, outtake )
         gyDrive(10, flex, 0, 1);
-        carousel(12, .1, 1);
+        carousel(12, 1);
         tiDiagonal(1, taut, 1, 1, 0);
+        armSet(1);
         fit();
         outtake();
 
@@ -210,6 +210,35 @@ public class Autonomous_V4_Revised_Base extends LinearOpMode {
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
     }
 
+    private void armSet(int side) {
+
+        if(opModeIsActive() && side >0){ // Side > 0 if RED SETUP
+
+            // Arm Pivot Encoder Levels
+            int[] armLevel = {
+                    0, 40, 720, 790, 900, // 0: Start, 1: In, 2: AL3-Opp, 3: AL2-Opp, 4: AL1-Opp
+                    120, 190, 290 // 5: AL1-Fnt, 6: AL2-Fnt, 7: AL3-Fnt
+            };
+
+            // int armPosition = armLevel[(4+webcam)];       // Only need Positions 0, 5, 6, & 7.
+            // ArmPivot.setTargetPosition(armPosition);
+
+
+        }
+
+        if(opModeIsActive() && 0> side){ // 0 > Side if BLUE SETUP
+
+            // Arm Pivot Encoder Levels
+            int[] armLevel = {
+                    0, 40, 900, 790, 720, // 0: Start, 1: In, 2: AL1-Opp, 3: AL2-Opp, 4: AL3-Opp
+                    120, 190, 290 // 5: AL1-Fnt, 6: AL2-Fnt, 7: AL3-Fnt
+            };
+
+            // int armPosition = armLevel[(1+webcam)];       // Only need Positions 0, 2, 3, & 4.
+            // ArmPivot.setTargetPosition(armPosition);
+
+        }
+    }
 
     private void gyDrive(int howMuch, double power, double angle, double dir) {
         // Variables
@@ -312,33 +341,57 @@ public class Autonomous_V4_Revised_Base extends LinearOpMode {
         }
     }
 
-    private void carousel ( int howMuch, double step, double dir){
+    private void carousel ( int howMuch, double side){
+        double ci = .25; // Initial
+        double ri = ci; // RED
+        double bi = ci; // BLUE
+        double s = .05;
+        double m = .35; // Maximum Speed
 
-        // Variables
-        double duckGoal = howMuch * clicksPerInch + RDuckDrive.getCurrentPosition();
-        double fracDuckGoal = RDuckDrive.getCurrentPosition() / duckGoal;
-        double start = .05; // Initial Speed
-        double mach = .25; // Maximum Speed
+        if(opModeIsActive() && side > 0 && Math.abs(howMuch)>Math.abs(RDuckDrive.getCurrentPosition())) {
+            RDuckDrive.setPower(ri);
 
-        // Logic
-        RDuckDrive.setTargetPosition((int) (dir * Math.abs(duckGoal)));
-        RDuckDrive.setPower((int) (dir * Math.min(start + (fracDuckGoal * step), mach)));
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
-        while (opModeIsActive() && Math.abs(RDuckDrive.getCurrentPosition()) <= howMuch * clicksPerInch) {
+            if(ri<m){
+                ri+=s;
+            }
 
-            try { Thread.sleep(5); }
-            catch (InterruptedException e)
-            { e.printStackTrace(); }
+        } else {
+            RDuckDrive.setPower(0);
+            ri=ci;
+        }
+
+        if(opModeIsActive() && 0 > side && Math.abs(howMuch)>Math.abs(BDuckDrive.getCurrentPosition())) {
+            BDuckDrive.setPower(bi);
+
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            if(bi<m){
+                bi+=s;
+            }
+
+        } else {
+            BDuckDrive.setPower(0);
+            bi= ci;
         }
 
     }
 
     private void fit () {
 
+        // Arm Pivot Encoder Levels
         int[] armLevel = {
-                0, 600, 800, 900, // 0: In, 1: AL3-Opp, 2: ShHub-High-Opp, 3: ShHub-Low-Opp
-                145, 309, 445, // 4: AL1, 5: AL2, 6: AL3
-                850, 750, 550 // 7: AL1-Opp, 8: AL2-Opp, 9: AL3-Opp
+                0, 40, 720, 790, 900, // 0: Start, 1: In, 2: AL3-Opp, 3: AL2-Opp, 4: AL1-Opp
+                120, 190, 290 // 5: AL1-Fnt, 6: AL2-Fnt, 7: AL3-Fnt
         };
         int armPosition = armLevel[0];
         ArmPivot.setTargetPosition(armPosition);
