@@ -220,8 +220,8 @@ public class Autonomous_V5 extends LinearOpMode {
                     120, 190, 290 // 5: AL1-Fnt, 6: AL2-Fnt, 7: AL3-Fnt
             };
 
-            // // int armPosition = armLevel[(4+webcam)];       // Only need Positions 0, 5, 6, & 7.
-            // ArmPivot.setTargetPosition(armPosition);
+            int armPosition = armLevel[(4+())];       // Only need Positions 0, 5, 6, & 7.
+            ArmPivot.setTargetPosition(armPosition);
 
 
         }
@@ -234,8 +234,8 @@ public class Autonomous_V5 extends LinearOpMode {
                     120, 190, 290 // 5: AL1-Fnt, 6: AL2-Fnt, 7: AL3-Fnt
             };
 
-            // int armPosition = armLevel[(1+webcam)];       // Only need Positions 0, 2, 3, & 4.
-            // ArmPivot.setTargetPosition(armPosition);
+            int armPosition = armLevel[(1+())];       // Only need Positions 0, 2, 3, & 4.
+            ArmPivot.setTargetPosition(armPosition);
 
         }
     }
