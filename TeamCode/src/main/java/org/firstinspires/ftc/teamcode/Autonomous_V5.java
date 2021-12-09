@@ -18,7 +18,7 @@ import java.util.List;
 // Robot Location
 
 @Autonomous(name = "Autonomous_V4_Revised_Base", group = "Linear Opmode")
-public class Autonomous_V4_Revised_Base extends LinearOpMode {
+public class Autonomous_V5 extends LinearOpMode {
 
     //setting up cam
     private static final String TFOD_MODEL_ASSET = "FreightFrenzy_BCDM.tflite";
