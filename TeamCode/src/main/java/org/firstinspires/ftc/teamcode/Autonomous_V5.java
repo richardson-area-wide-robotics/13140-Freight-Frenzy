@@ -150,7 +150,6 @@ public class Autonomous_V5 extends LinearOpMode {
         gyDrive(10, flex, 0, 1);
         carousel(12, 1);
         tiDiagonal(1, taut, 1, 1, 0);
-        armSet(1);
         fit();
         outtake();
 
@@ -174,7 +173,10 @@ public class Autonomous_V5 extends LinearOpMode {
                             i++;
                         }
                         telemetry.update();
+
                     }
+
+
                 }
             }
         }
@@ -208,36 +210,6 @@ public class Autonomous_V5 extends LinearOpMode {
         tfodParameters.inputSize = 320;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
-    }
-
-    private void armSet(int side) {
-
-        if(opModeIsActive() && side >0){ // Side > 0 if RED SETUP
-
-            // Arm Pivot Encoder Levels
-            int[] armLevel = {
-                    0, 40, 720, 790, 900, // 0: Start, 1: In, 2: AL3-Opp, 3: AL2-Opp, 4: AL1-Opp
-                    120, 190, 290 // 5: AL1-Fnt, 6: AL2-Fnt, 7: AL3-Fnt
-            };
-
-            int armPosition = armLevel[(4+())];       // Only need Positions 0, 5, 6, & 7.
-            ArmPivot.setTargetPosition(armPosition);
-
-
-        }
-
-        if(opModeIsActive() && 0> side){ // 0 > Side if BLUE SETUP
-
-            // Arm Pivot Encoder Levels
-            int[] armLevel = {
-                    0, 40, 900, 790, 720, // 0: Start, 1: In, 2: AL1-Opp, 3: AL2-Opp, 4: AL3-Opp
-                    120, 190, 290 // 5: AL1-Fnt, 6: AL2-Fnt, 7: AL3-Fnt
-            };
-
-            int armPosition = armLevel[(1+())];       // Only need Positions 0, 2, 3, & 4.
-            ArmPivot.setTargetPosition(armPosition);
-
-        }
     }
 
     private void gyDrive(int howMuch, double power, double angle, double dir) {
