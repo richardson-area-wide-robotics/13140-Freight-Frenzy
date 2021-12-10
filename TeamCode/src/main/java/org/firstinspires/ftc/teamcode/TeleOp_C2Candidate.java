@@ -115,7 +115,7 @@ public class TeleOp_C2Candidate extends LinearOpMode {
                 BDuckDrive.setPower(0);
             }
 
-            if(opModeIsActive() && gamepad1.dpad_left) {
+            if(opModeIsActive() && gamepad1.left_bumper) {
                 RDuckDrive.setPower(ri);
 
                 try {
@@ -133,7 +133,7 @@ public class TeleOp_C2Candidate extends LinearOpMode {
                 ri=i;
             }
 
-            if(opModeIsActive() && gamepad1.dpad_right) {
+            if(opModeIsActive() && gamepad1.right_bumper) {
                 BDuckDrive.setPower(bi);
 
                 try {
@@ -156,7 +156,7 @@ public class TeleOp_C2Candidate extends LinearOpMode {
             // Arm Pivot Encoder Levels
             int[] armLevel = {
                     0, 40, 720, 790, 900, // 0: Start, 1: In, 2: AL3-Opp, 3: AL2-Opp, 4: AL1-Opp
-                    120, 190, 290 // 5: AL1-Fnt, 6: AL2-Fnt, 7: AL3-Fnt
+                    120, 190, 290, 330, 20  // 5: AL1-Fnt, 6: AL2-Fnt, 7: AL3-Fnt, 8: High L3 Fnt
             };
 
             // Level Switch Logic
@@ -169,12 +169,16 @@ public class TeleOp_C2Candidate extends LinearOpMode {
                 armPosition = armLevel[3];
             } else if(gamepad1.triangle){
                 armPosition = armLevel[2];
-            } else if(gamepad1.square){
+            } else if(gamepad1.dpad_left){
                 armPosition = armLevel[6];
             } else if(gamepad1.dpad_down){
                 armPosition = armLevel[5];
             } else if(gamepad1.dpad_up){
                 armPosition = armLevel[7];
+            } else if(gamepad1.dpad_right){
+                armPosition = armLevel[8];
+            } else if(gamepad1.square){
+                armPosition = armLevel[9];
             }
 
             ArmPivot.setTargetPosition(armPosition);

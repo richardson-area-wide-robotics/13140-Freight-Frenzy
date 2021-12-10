@@ -17,11 +17,11 @@ import java.util.List;
 
 // Robot Location
 
-@Autonomous(name = "Autonomous_V4_Revised_Base", group = "Linear Opmode")
-public class Autonomous_V5 extends LinearOpMode {
+@Autonomous(name = "Autonomous_V5_Red", group = "Linear Opmode")
+public class Autonomous_V5_Red extends LinearOpMode {
 
     //setting up cam
-    private static final String TFOD_MODEL_ASSET = "FreightFrenzy_BCDM.tflite";
+    private static final String TFOD_MODEL_ASSET = "Model1_13140.tflite";
     private static final String[] LABELS = {"Ball", "Cube", "Duck", "Marker"};
 
     private static final String VUFORIA_KEY =
@@ -169,30 +169,34 @@ public class Autonomous_V5 extends LinearOpMode {
                                     120, 190, 290 // 5: AL1-Fnt, 6: AL2-Fnt, 7: AL3-Fnt
                             };
 
-                            if(recognition.getRight() > 300){
-
-                                int armPosition = armLevel[5];
-                                ArmPivot.setTargetPosition(armPosition);
-
-                            } else if(recognition.getRight() < 300 && recognition.getBottom() > 0){
+                            if(recognition.getRight() > 500){
 
                                 int armPosition = armLevel[6];
                                 ArmPivot.setTargetPosition(armPosition);
+                                while (ArmPivot.isBusy()) {
+                                }
 
-                            } else if(0 > recognition.getRight() ){
+                            } else if(recognition.getRight() < 500 && recognition.getBottom() > 100){
+
+                                int armPosition = armLevel[5];
+                                ArmPivot.setTargetPosition(armPosition);
+                                while (ArmPivot.isBusy()) {
+                                }
+
+                            } else{
 
                                 int armPosition = armLevel[7];
                                 ArmPivot.setTargetPosition(armPosition);
-
+                                while (ArmPivot.isBusy()) {
+                                }
                             }
 
                         }
-
                         telemetry.update();
                     }
-
-
-
+                    if (ArmPivot.getCurrentPosition() > 100) {
+                        break;
+                    }
                 }
 
             }

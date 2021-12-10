@@ -64,7 +64,7 @@ public class JustCameraTest extends LinearOpMode {
      *  FreightFrenzy_BC.tflite  0: Ball,  1: Cube
      *  FreightFrenzy_DM.tflite  0: Duck,  1: Marker
      */
-    private static final String TFOD_MODEL_ASSET = "Team_Element_V2.tflite";
+    private static final String TFOD_MODEL_ASSET = "Model1_13140.tflite";
     private static final String[] LABELS = {
             "Team_Element"
     };
