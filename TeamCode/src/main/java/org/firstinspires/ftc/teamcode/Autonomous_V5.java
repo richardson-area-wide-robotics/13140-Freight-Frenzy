@@ -145,14 +145,6 @@ public class Autonomous_V5 extends LinearOpMode {
         // final double comp = 1.0;
 
         waitForStart();
-        // Position Blocks: ( gyDrive, tiDiagonal )
-        // Task Blocks: ( barcode, carousel, fit, outtake )
-        gyDrive(10, flex, 0, 1);
-        carousel(12, 1);
-        tiDiagonal(1, taut, 1, 1, 0);
-        fit();
-        outtake();
-
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
@@ -171,15 +163,50 @@ public class Autonomous_V5 extends LinearOpMode {
                             telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
                                     recognition.getRight(), recognition.getBottom());
                             i++;
-                        }
-                        telemetry.update();
 
+                            int[] armLevel = {
+                                    0, 40, 720, 790, 900, // 0: Start, 1: In, 2: AL3-Opp, 3: AL2-Opp, 4: AL1-Opp
+                                    120, 190, 290 // 5: AL1-Fnt, 6: AL2-Fnt, 7: AL3-Fnt
+                            };
+
+                            if(recognition.getRight() > 300){
+
+                                int armPosition = armLevel[5];
+                                ArmPivot.setTargetPosition(armPosition);
+
+                            } else if(recognition.getRight() < 300 && recognition.getBottom() > 0){
+
+                                int armPosition = armLevel[6];
+                                ArmPivot.setTargetPosition(armPosition);
+
+                            } else if(0 > recognition.getRight() ){
+
+                                int armPosition = armLevel[7];
+                                ArmPivot.setTargetPosition(armPosition);
+
+                            }
+
+                        }
+
+                        telemetry.update();
                     }
 
 
+
                 }
+
             }
         }
+
+
+        // Position Blocks: ( gyDrive, tiDiagonal )
+        // Task Blocks: ( barcode, carousel, fit, outtake )
+        gyDrive(10, flex, 0, 1);
+        carousel(12, 1);
+        tiDiagonal(1, taut, 1, 1, 0);
+        fit();
+        outtake();
+
     }
 
     private void initVuforia() {
