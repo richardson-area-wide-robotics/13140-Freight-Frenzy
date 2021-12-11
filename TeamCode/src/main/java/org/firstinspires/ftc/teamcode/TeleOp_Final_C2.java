@@ -34,7 +34,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp
-public class TeleOp_C2Candidate extends LinearOpMode {
+public class TeleOp_Final_C2 extends LinearOpMode {
     @Override
     public void runOpMode() {
         // Declare Motors.
@@ -87,7 +87,7 @@ public class TeleOp_C2Candidate extends LinearOpMode {
             // // //  Section #1: Movement // // //
 
             // Variable Assignments.
-            double x = gamepad1.left_stick_x/-1; // Strafing
+            double x = gamepad1.left_stick_x / -1; // Strafing
             double y = gamepad1.left_stick_y; // Forwards & Back
             double rx = -gamepad1.right_stick_x; // Rotation
 
@@ -107,15 +107,15 @@ public class TeleOp_C2Candidate extends LinearOpMode {
 
             // // // Section #2: Carousel
 
-            if(opModeIsActive() && (gamepad1.share)) {
-                RDuckDrive.setPower(.5);
-                BDuckDrive.setPower(-.5);
+            if (opModeIsActive() && (gamepad1.share)) {
+                RDuckDrive.setPower(.4);
+                BDuckDrive.setPower(-.4);
             } else {
                 RDuckDrive.setPower(0);
                 BDuckDrive.setPower(0);
             }
 
-            if(opModeIsActive() && gamepad1.left_bumper) {
+            if (opModeIsActive() && gamepad1.left_bumper) {
                 RDuckDrive.setPower(ri);
 
                 try {
@@ -124,16 +124,16 @@ public class TeleOp_C2Candidate extends LinearOpMode {
                     e.printStackTrace();
                 }
 
-                if(ri<m){
-                    ri+=s;
+                if (ri < m) {
+                    ri += s;
                 }
 
             } else {
                 RDuckDrive.setPower(0);
-                ri=i;
+                ri = i;
             }
 
-            if(opModeIsActive() && gamepad1.right_bumper) {
+            if (opModeIsActive() && gamepad1.right_bumper) {
                 BDuckDrive.setPower(bi);
 
                 try {
@@ -142,55 +142,67 @@ public class TeleOp_C2Candidate extends LinearOpMode {
                     e.printStackTrace();
                 }
 
-                if(bi<m){
-                    bi+=s;
+                if (bi < m) {
+                    bi += s;
                 }
 
             } else {
                 BDuckDrive.setPower(0);
-                bi= i;
+                bi = i;
             }
 
             // // // Section #3: Freight // // //
 
             // Arm Pivot Encoder Levels
             int[] armLevel = {
-                    0, 40, 720, 790, 900, // 0: Start, 1: In, 2: AL3-Opp, 3: AL2-Opp, 4: AL1-Opp
-                    120, 190, 290, 330, 20  // 5: AL1-Fnt, 6: AL2-Fnt, 7: AL3-Fnt, 8: High L3 Fnt
+                    0, 20, 40, // 0: Start, 1: Duck Intake, 2: Freight Intake
+                    120, 190, 290, 330, // 3: AL1F, 4: AL2F, 5: AL3F, 6: AL3+F
+                    900, 790, 720, // 7: AL1O, 8: AL2O, 9: AL3O
             };
 
             // Level Switch Logic
-
-            if(gamepad1.left_trigger > .1){
-                armPosition = armLevel[1];
-            } else if(gamepad1.cross){
-                armPosition = armLevel[4];
-            } else if(gamepad1.circle){
-                armPosition = armLevel[3];
-            } else if(gamepad1.triangle){
+            if(opModeIsActive() && gamepad1.left_trigger > .15) { // Freight
                 armPosition = armLevel[2];
-            } else if(gamepad1.dpad_left){
-                armPosition = armLevel[6];
-            } else if(gamepad1.dpad_down){
+            } else if(opModeIsActive() && gamepad1.square){ // Duck
+                armPosition = armLevel[1];
+            } else if (opModeIsActive() && gamepad1.dpad_up) { // AL3 F
                 armPosition = armLevel[5];
-            } else if(gamepad1.dpad_up){
-                armPosition = armLevel[7];
-            } else if(gamepad1.dpad_right){
-                armPosition = armLevel[8];
-            } else if(gamepad1.square){
+            } else if (opModeIsActive() && gamepad1.triangle) { // AL3 O
                 armPosition = armLevel[9];
+            } else if (opModeIsActive() && gamepad1.dpad_right) { // AL3+ F
+                armPosition = armLevel[6];
+            } else if (opModeIsActive() && gamepad1.dpad_left) { // AL2 F
+                armPosition = armLevel[4];
+            } else if (opModeIsActive() && gamepad1.dpad_down) { // AL 1 F
+                armPosition = armLevel[3];
+            } else if (opModeIsActive() && gamepad1.circle) { // AL2 O
+                armPosition = armLevel[8];
+            } else if (opModeIsActive() && gamepad1.cross) { // AL1 O
+                armPosition = armLevel[7];
+            } else if (opModeIsActive() && gamepad1.guide) { // 0 Pos
+                armPosition = armLevel[0];
             }
 
             ArmPivot.setTargetPosition(armPosition);
 
 
-            // Intake / Outtake Logic.
-            if(gamepad1.left_trigger > .1) {
+            // Intake + Outtake Logic Tree.
+            if (opModeIsActive() && gamepad1.square || gamepad1.left_trigger > .15) {
                 InOutTake.setPower(1);
-            } else if (gamepad1.right_trigger > .1) {
+            } else if (opModeIsActive() && gamepad1.right_trigger > .15) {
                 InOutTake.setPower(-1);
-            } else { InOutTake.setPower(0); }
-
+            } else {
+                InOutTake.setPower(0);
+            }
         }
+
     }
 }
+
+    // // // Controller Assignments // // //
+
+    // // D-Pad // //
+
+// UP: AL3F, LEFT: AL2F, DOWN: AL1F, RIGHT: AL3+F
+
+
