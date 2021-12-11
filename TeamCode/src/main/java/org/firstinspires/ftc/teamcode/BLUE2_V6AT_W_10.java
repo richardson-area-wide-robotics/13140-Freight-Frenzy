@@ -1,25 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
-
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-
-import java.util.List;
 
 // Robot Location
 
-@Autonomous(name = "Autonomous_V5_NOCAM", group = "Linear Opmode")
-public class Autonomous_V5_NOCAM extends LinearOpMode {
+@Autonomous(name = "BLUE2_V6AT_W_10", group = "Linear Opmode")
+public class BLUE2_V6AT_W_10 extends LinearOpMode {
 
     // Declare Devices
     DcMotor FLDrive = null;
@@ -110,15 +99,18 @@ public class Autonomous_V5_NOCAM extends LinearOpMode {
 
         // Rotational Speeds
         final double prec = 0.2;
-        final double taut = 0.4;
+        // final double taut = 0.4;
         final double flex = 0.7;
-        final double comp = 1.0;
+        // final double comp = 1.0;
 
         waitForStart();
 
         // ARM SET ( 7 fnt, 2 opp )
         // Position Blocks: ( gyDrive, tiDiagonal )
         // Task Blocks: ( carousel, fit, outtake )
+
+        strafeR(-32, prec);
+        moveF(-50, flex);
 
     }
 
